@@ -14,7 +14,11 @@ public class AccountCreateActivity extends AppCompatActivity {
 
     }
 
+
+    /**createButtonを押された時の動作
+     * 入力されたデータを解析して問題が無ければ登録後、スタート画面に戻る*/
     public void onCreateButtonClick(View view){
+        //TODO:テスト実装
         finish();
     }
 }
