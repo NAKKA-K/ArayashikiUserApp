@@ -7,18 +7,18 @@
     tools:context="com.example.snakka.arayashikiuserapp.AccountCreateActivity">
 
     <TextView
-        android:id="@+id/userMailView"
+        android:id="@+id/guardianMailView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/user_mail"
-        android:textSize="24sp"
-        tools:layout_constraintBottom_creator="1"
-        android:layout_marginStart="16dp"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent"
         android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="50dp"
-        app:layout_constraintTop_toBottomOf="@+id/userNameEdit" />
+        android:text="@string/guardian_mail"
+        android:textSize="24sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/userNameEdit"
+        tools:layout_constraintBottom_creator="1"
+        tools:layout_constraintLeft_creator="1" />
 
     <TextView
         android:id="@+id/AccountTitleView"
@@ -51,29 +51,29 @@
         android:id="@+id/userNameEdit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="ユーザー名"
-        android:inputType="textPersonName"
-        tools:layout_constraintTop_creator="1"
         android:layout_marginStart="16dp"
         android:layout_marginTop="26dp"
+        android:ems="10"
+        android:hint="@string/user_name"
+        android:inputType="textPersonName"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userNameView"
         tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        tools:layout_constraintTop_creator="1" />
 
     <EditText
-        android:id="@+id/userMailEdit"
+        android:id="@+id/guardianMailEdit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="メールアドレス"
-        android:inputType="textEmailAddress"
-        tools:layout_constraintTop_creator="1"
         android:layout_marginStart="16dp"
         android:layout_marginTop="27dp"
-        app:layout_constraintTop_toBottomOf="@+id/userMailView"
+        android:ems="10"
+        android:hint="@string/guardian_mail"
+        android:inputType="textEmailAddress"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/guardianMailView"
         tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toLeftOf="parent" />
+        tools:layout_constraintTop_creator="1" />
 
     <Button
         android:id="@+id/createButton"
@@ -94,7 +94,7 @@
         android:layout_marginBottom="50dp"
         android:layout_marginEnd="16dp"
         android:onClick="onCreateButtonClick"
-        android:text="登録済みの場合"
+        android:text="@string/login_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         tools:layout_constraintBottom_creator="1"
