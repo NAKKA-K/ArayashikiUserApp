@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">ArayashikiUserApp</string>
+    <string name="start_button_text">ボタンを押してください</string>
+    <string name="account_title_text">アカウント登録画面</string>
+    <string name="user_name">ユーザー名</string>
+    <string name="guardian_mail">保護者メールアドレス</string>
+    <string name="create_text">登録</string>
+    <string name="login_text">登録済みの場合</string>
 </resources>
