@@ -24,9 +24,9 @@ public class MainActivity extends AppCompatActivity {
     public void onStartButtonClick(View view){
         //TODO:テスト実装。現在の作業はすべて音声案内画面で行われるはずなため、常にtrueになるように設定
         if(true || AccountManager.loginedAccount(view.getContext()) == true){
-            //TODO:アカウントが登録されているので、音声案内画面に
-            
-
+            Intent intent = new Intent(MainActivity.this, VoiceGuideActivity.class);
+            startActivity(intent);
+            return;
         }
 
         //アプリにアカウントが登録されていない
