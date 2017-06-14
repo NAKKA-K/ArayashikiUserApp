@@ -5,6 +5,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,7 +18,7 @@ public class AccountManager {
     private static String guardianMail;
     private static final String USER_NAME_KEY = "user_name_key";
     private static final String GUARDIAN_MAIL_KEY = "guardian_mail_key";
-
+    private static final String URL = "http://hoge.com/mana/userCreate";
 
 
     //アプリにログイン情報が残っているか
@@ -41,6 +46,34 @@ public class AccountManager {
 
         return true; //認める
     }
+
+    public int postAccountToServer(String userName, String guardianMail){
+        PrintWriter outputServer = null;
+        HttpURLConnection httpConecter = null;
+        int code = 0;
+
+        try{
+            //TODO:URLの記述方法が理解できていなかった為、要確認
+            URL url = new URL(URL);
+            //URL url = new URL(URL + "{" + userName + "," + guardianMail + "}");
+            httpConecter = (HttpURLConnection) url.openConnection();
+            httpConecter.setRequestMethod("POST");
+            httpConecter.setRequestProperty("Accept-Language", "jp");
+            httpConecter.connect();
+
+            code = httpConecter.getResponseCode(); //TODO:既存、登録、その他の3種類くらいで、条件分けする予定
+        }catch(MalformedURLException e){
+            //System.out.println("URLが不正です");
+        }catch(IOException e){
+            //System.out.println("接続失敗");
+        }finally{
+            if(outputServer != null) outputServer.close();
+            if(httpConecter != null) httpConecter.disconnect();
+        }
+
+        return code;
+    }
+
 
 
     //ログインすると同時に、アカウント情報をアプリに記憶させる
