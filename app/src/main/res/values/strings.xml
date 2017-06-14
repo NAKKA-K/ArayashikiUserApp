@@ -6,4 +6,5 @@
     <string name="guardian_mail">保護者メールアドレス</string>
     <string name="create_text">登録</string>
     <string name="login_text">登録済みの場合</string>
+    <string name="voice_guide_title_text">音声案内画面</string>
 </resources>
