@@ -22,9 +22,11 @@ public class MainActivity extends AppCompatActivity {
      *1度アカウント登録していた場合は音声案内画面に。
      *始めてアプリを起動したときはアカウント登録画面に飛ぶ。*/
     public void onStartButtonClick(View view){
-        if(AccountManager.loginedAccount(view.getContext()) == true){
-            //TODO:アカウントが登録されているので、音声案内画面に
-            return; //TODO:テスト実装
+        //TODO:テスト実装。現在の作業はすべて音声案内画面で行われるはずなため、常にtrueになるように設定
+        if(true || AccountManager.loginedAccount(view.getContext()) == true){
+            Intent intent = new Intent(MainActivity.this, VoiceGuideActivity.class);
+            startActivity(intent);
+            return;
         }
 
         //アプリにアカウントが登録されていない
