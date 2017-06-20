@@ -16,12 +16,9 @@ public class BluetoothManager {
         return true;
     }
 
-    public void onBluetooth(Activity activity){
-        if(bleAdapter.isEnabled() == false){
-            Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            activity.startActivityForResult(intent, REQUEST_ENABLE_BT);
-        }
 
+    public void onBluetooth(Activity activity){
+        bleAdapter.enable(); //強制的にBluetoothを起動する
     }
 
 
