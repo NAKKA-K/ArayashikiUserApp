@@ -15,8 +15,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         bleMgr = new BluetoothManager();
-        if(bleMgr.isBleSupport() == false){
-            Toast.makeText(this, "Bluetoothに対応していません", Toast.LENGTH_LONG).show();
+        if(bleMgr.isBleSupport(this) == false){
             this.moveTaskToBack(true);
         }
 
