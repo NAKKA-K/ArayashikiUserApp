@@ -23,7 +23,9 @@ public class BluetoothManager {
 
 
     public void onBluetooth(Activity activity){
-        bleAdapter.enable(); //強制的にBluetoothを起動する
+        if(bleAdapter.isEnabled() == false){
+            bleAdapter.enable(); //強制的にBluetoothを起動する
+        }
     }
 
 
