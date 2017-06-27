@@ -7,30 +7,26 @@ package com.example.snakka.arayashikiuserapp;
 
 public class NumberOperation {
 
+    // FRONTから時計回りに連番
     public static final int FRONT = 1;
     public static final int RIGHT = 2;
     public static final int LEFT = 3;
     public static final int END = 0;
 
-    private final int NORTH = 0;
-    private final int EAST = 1;
-    private final int SOUTH = 2;
-    private final int WEST = 3;
+    //NORTHから時計回りに連番
+    private static final int NORTH = 0;
+    private static final int EAST = 1;
+    private static final int SOUTH = 2;
+    private static final int WEST = 3;
 
-    private int[]  drectionNumber = new int[4]; //どの方角に進路があるかを格納：0 無  -1 backNum
+    private int[]  drectionNumber = new int[4]; //どの方角に進路があるかを格納：0 無
 
     private int currentNum; //現在地のNumber
-    /*private int nextNorth, nextSouth,  //進路方向にある次のNumber北南西東
-            nextWest, nextEast;*/
     private int backNum;    //一つ前に通り過ぎたNumber
 
     //コンストラクターの宣言（初期化
     public NumberOperation (){
         currentNum = 0;
-        /*nextNorth = 0;// N北
-        nextEast = 0;// E東
-        nextSouth = 0;// S南
-        nextWest = 0;// W西*/
         backNum = 0;
         for(int i = 0 ; i < drectionNumber.length ; i++){
             drectionNumber[i] = 0;
@@ -49,38 +45,22 @@ public class NumberOperation {
 
     //TODO:setnext[方角]:サーバーから送られてくる四方のNumberをdrectionNumber[方角]にセットする
     /*引数
-    next[方角] 方角事のNumber センサーが無ければ：0 有れば：非0
+    next[方角] 方角事のNumber センサーが無ければ：0 有れば：各Number
      */
     public void setNextNorth(int nextNorth) {
-        if (nextNorth == backNum) { //backNumとnext
-            drectionNumber[NORTH] = -1;
-        }else{
-            drectionNumber[NORTH] = nextNorth;
-        }
+        drectionNumber[NORTH] = nextNorth;
     }
 
     public void setNextEast(int nextEast) {
-        if (nextEast == backNum) {
-            drectionNumber[EAST] = -1;
-        }else {
-            drectionNumber[EAST] = nextEast;
-        }
+        drectionNumber[EAST] = nextEast;
     }
 
     public void setNextSouth(int nextSouth) {
-        if (nextSouth == backNum) {
-            drectionNumber[SOUTH] = -1;
-        }else {
-            drectionNumber[SOUTH] = nextSouth;
-        }
+        drectionNumber[SOUTH] = nextSouth;
     }
 
     public void setNextWest(int nextWest) {
-        if (nextWest == backNum) {
-            drectionNumber[WEST] = -1;
-        }else {
-            drectionNumber[WEST] = nextWest;
-        }
+        drectionNumber[WEST] = nextWest;
     }
 
     //TODO:現在地のナンバーを取得 必要性は薄いかもしれない
@@ -111,9 +91,10 @@ public class NumberOperation {
 
 
     private int[] getSelectCourse(int backDrection){
-        int[] courseSelect = new int[4];
-        int courseSelectIdx = 0;
+        int[] courseStorage = new int[4];
+        int courseSelect = FRONT;   //進路の定数が連番になっているので(++)で増やしていく
         int routeDrection = backDrection;
+        int courseSelectIdx = 0;
 
         /*routeDrectionが現在backDrection(後ろ)を示しているのに対して、
         進路の前を示すように変更する
@@ -122,24 +103,34 @@ public class NumberOperation {
             routeDrection -= 4;
         }
 
-
-        setCourse: for(int selectCourse = 1 ; selectCourse <= 3 ; ){
-            if(routeDrection == backDrection){
-                continue;
+        //  方角は4つしか定義してないので、初期値０から３までのループ
+        for( int i = 0; i <= 3 ; i++){
+            //TODO:隣接するNumberがその方角にない場合は０としているが、変更の可能性あり
+            if(drectionNumber[routeDrection] != 0 && routeDrection != backDrection) {
+                courseStorage[courseSelectIdx++] = courseSelect++;
             }
-            if()
-            drectionNumber[routeDrection]
-
+            //方角の定数の上限が WEST == 3 なので3を超える時０に戻す
             if((routeDrection + 1) <= 3){
                 routeDrection += 1;
+            }else {
+                routeDrection = 0;
             }
         }
+        courseStorage[courseSelectIdx] = END;
+        return courseStorage;
+    }
+
+    //TODO:NORTHから時計回りにbackNumの指す方角を探す
+    private int searchBackDrection(){
+        int drection = NORTH;
+        for (; drectionNumber[drection] == backNum; drection++) {}
+        return drection;
     }
 
     public int[] getCourse() {
-        int backDrection = 0;
+        int backDrection;
 
-        for (; drectionNumber[backDrection] == backNum; backDrection++) {}
+        backDrection = searchBackDrection();
 
         return getSelectCourse(backDrection);
     }
