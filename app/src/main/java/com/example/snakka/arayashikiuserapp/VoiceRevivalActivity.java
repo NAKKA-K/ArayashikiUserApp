@@ -12,19 +12,18 @@ package com.example.snakka.arayashikiuserapp;
 public class VoiceRevivalActivity extends AppCompatActivity {
 
     SoundPool sp=null;
-    int id_SOUND[]={
+    int directionVoice[]={
             R.raw.front, //前に進むよう指示する音声
             R.raw.right, //右に曲がるよう　〃
             R.raw.left,  //左　　　　〃
     };
-    int id_SENSOR_NUM,i=0; //センサのナンバーを受け取るためのフィールド
+    int directionNum; //directionNumberGetメソッドから方向ナンバーを受け取るためのフィールド
 
     @SuppressWarnings("deprecation") //soundpoolの警告回避
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_voice_revival);
-
+        setContentView(R.layout.activity_voice_revival); //仮の画面を表示
 
         //互換性を保つためにインスタンスを2つ用意(初期化)
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {  //バージョンによってインスタンス生成の仕方を変える
@@ -42,20 +41,19 @@ public class VoiceRevivalActivity extends AppCompatActivity {
         }
 
         //音声読み込み
-        for (i = 0; i < id_SOUND.length; i++)
+        for (int i = 0; i < directionVoice.length; i++)
         {
-            id_SOUND[i] = sp.load(this, id_SOUND[i], 1);
+            directionVoice[i] = sp.load(this, directionVoice[i], 1);
         }
     }
 
-    //センサのナンバーを受け取るメソッド
-    public void testNumberGet()
+    //ナンバーを受け取るメソッド
+    public void directionNumberGet()
     {
-        Random rand = new Random(); //とりあえず今はランダムに生成した数をセンサのナンバーとする
+        Random rand = new Random(); //とりあえず今はランダムに生成した数を方向ナンバーとする(本来はNumberOperationクラス内にあるメソッドから受け取る)
         do{
-            id_SENSOR_NUM = rand.nextInt(3);
-        }while(id_SENSOR_NUM==0); //0の時ループを続ける
-
+            directionNum = rand.nextInt(4);
+        }while(directionNum==0); //0の時ループを続ける
     }
 
     //音声を再生
@@ -67,18 +65,18 @@ public class VoiceRevivalActivity extends AppCompatActivity {
             @Override
             public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
                 TextView textView = (TextView) findViewById(R.id.textView); //TextViewオブジェクト生成
-                testNumberGet(); //センサのナンバーを受け取る
-                if (id_SENSOR_NUM==1) { //受け取ったセンサのナンバーが1の場合は前へ進むよう指示する音声を流す
+                directionNumberGet(); //方向ナンバーを受け取る
+                if (directionNum==1) { //受け取ったセンサのナンバーが1の場合は前へ進むよう指示する音声を流す
                     textView.setText(R.string.front);
-                    sp.play(id_SOUND[0], 1, 1, 0, 0, 1);
+                    sp.play(directionVoice[0], 1, 1, 0, 0, 1);
                 }
-                else if(id_SENSOR_NUM==2){ //2なら右に曲がるよう指示
+                else if(directionNum==2){ //2なら右に曲がるよう指示
                     textView.setText(R.string.right);
-                    sp.play(id_SOUND[1], 1, 1, 0, 0, 1);
+                    sp.play(directionVoice[1], 1, 1, 0, 0, 1);
                 }
                 else{ //3なら左に曲がるよう指示
                     textView.setText((R.string.left));
-                    sp.play(id_SOUND[2], 1, 1, 0, 0, 1);
+                    sp.play(directionVoice[2], 1, 1, 0, 0, 1);
                 }
 
             }
