@@ -13,7 +13,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        bleMgr = new BLEManager();
+        bleMgr = new BLEManager(this);
         if(bleMgr.isBleSupport(this) == false){
             this.moveTaskToBack(true);
         }
