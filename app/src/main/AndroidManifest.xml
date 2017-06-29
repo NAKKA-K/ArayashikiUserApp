@@ -32,7 +32,6 @@
 
 
         <activity android:name=".AccountCreateActivity" />
-        <activity android:name=".VoiceGuideActivity"></activity>
 
     </application>
 
