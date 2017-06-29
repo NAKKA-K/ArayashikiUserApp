@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
-public class BluetoothManager {
+public class BLEManager {
     private static BluetoothAdapter bleAdapter = null;
     private final int REQUEST_ENABLE_BT = 1;
 
