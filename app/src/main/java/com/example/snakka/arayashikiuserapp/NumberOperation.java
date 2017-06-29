@@ -97,8 +97,8 @@ public class NumberOperation {
         int courseSelectIdx = 0;
 
         /*routeDrectionが現在backDrection(後ろ)を示しているのに対して、
-        進路の前を示すように変更する
-        例：backが SOUTH == 2 の時は、前は NORTH == 0 */
+        進路の前(FRONT)を示すように変更する
+        例：backが SOUTH == 2 の時は、FRONTは NORTH == 0 */
         if ((routeDrection += 2 ) > 3 ){
             routeDrection -= 4;
         }
@@ -108,6 +108,8 @@ public class NumberOperation {
             //TODO:隣接するNumberがその方角にない場合は０としているが、変更の可能性あり
             if(drectionNumber[routeDrection] != 0 && routeDrection != backDrection) {
                 courseStorage[courseSelectIdx++] = courseSelect++;
+            }else if(routeDrection != backDrection){
+                courseSelect += 1;
             }
             //方角の定数の上限が WEST == 3 なので3を超える時０に戻す
             if((routeDrection + 1) <= 3){
@@ -123,7 +125,7 @@ public class NumberOperation {
     //TODO:NORTHから時計回りにbackNumの指す方角を探す
     private int searchBackDrection(){
         int drection = NORTH;
-        for (; drectionNumber[drection] == backNum; drection++) {}
+        for (; drectionNumber[drection] != backNum; drection++) {}
         return drection;
     }
 
