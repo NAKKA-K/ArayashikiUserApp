@@ -127,6 +127,7 @@ public class NumberOperation {
         return drection;
     }
 
+    //進路情報を取得するメゾット
     public int[] getCourse() {
         int backDrection;
 
