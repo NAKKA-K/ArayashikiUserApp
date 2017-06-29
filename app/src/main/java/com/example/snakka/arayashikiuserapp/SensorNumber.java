@@ -5,7 +5,7 @@ package com.example.snakka.arayashikiuserapp;
  * ユーザー側のナンバー操作クラス
  */
 
-public class NumberOperation {
+public class SensorNumber {
 
     // FRONTから時計回りに連番
     public static final int FRONT = 1;
@@ -25,7 +25,7 @@ public class NumberOperation {
     private int backNum;    //一つ前に通り過ぎたNumber
 
     //コンストラクターの宣言（初期化
-    public NumberOperation (){
+    public SensorNumber(){
         currentNum = 0;
         backNum = 0;
         for(int i = 0 ; i < drectionNumber.length ; i++){
