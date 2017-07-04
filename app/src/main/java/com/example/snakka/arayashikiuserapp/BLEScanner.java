@@ -2,6 +2,7 @@ package com.example.snakka.arayashikiuserapp;
 
 
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.util.Log;
@@ -10,16 +11,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BLEScanner {
-    private static ScanCallback scanCallback;
+    private static final ScanCallback scanCallback = initScanCallback();
     private static ArrayList<BluetoothDevice> deviceList = new ArrayList<BluetoothDevice>();
+    private boolean isScanning = false;
+    private BluetoothLeScanner bleLeScanner;
 
-    public BLEScanner(){
-        scanCallback = initScanCallback();
+    public BLEScanner(BluetoothLeScanner bleLeScanner){
+        //scanCallback = initScanCallback();
+
+        this.bleLeScanner = bleLeScanner;
     }
 
 
     /** scanCallback変数を初期化するメソッド */
-    private ScanCallback initScanCallback(){
+    private static ScanCallback initScanCallback(){
         return new ScanCallback() {
             /**
              * BLE端末が見つかった場合のコールバック。
@@ -33,12 +38,17 @@ public class BLEScanner {
             public void onScanResult(int callbackType, ScanResult result) {
                 super.onScanResult(callbackType, result);
 
-                if(isAdded(result.getDevice()) == false){
-                    addDevice(result.getDevice());
+                BluetoothDevice device = result.getDevice();
+                if(isAdded(device) == false){
+                    addDevice(device);
+
+                    Log.d("ScanDevice address:", device.getAddress());
+                    Log.d("ScanDevice name:", device.getName());
+
+                    String deviceName = result.getScanRecord().getDeviceName();
+                    Log.i("ScanDevice", deviceName); //取得したデバイスの名前をlogに流す
                 }
 
-                String deviceName = result.getScanRecord().getDeviceName();
-                Log.i("ScanDevice", deviceName); //取得したデバイスの名前をlogに流す
             }
 
             /**
@@ -63,7 +73,7 @@ public class BLEScanner {
 
 
     /** deviceListにデバイスをセットする */
-    public void addDevice(BluetoothDevice device){
+    public static void addDevice(BluetoothDevice device){
         /* //TODO:どちらの実装が良いか
         if(deviceList == null){
             deviceList = new ArrayList<BluetoothDevice>();
@@ -72,11 +82,21 @@ public class BLEScanner {
     }
 
     /** deviceListにスキャンしたデバイスが追加されているかどうか */
-    public boolean isAdded(BluetoothDevice device){
+    public static boolean isAdded(BluetoothDevice device){
         if(deviceList != null && deviceList.isEmpty() == false){
             return deviceList.contains(device);
         }
         return false;
     }
 
+
+    /** BLEManagerで作られたインスタンスから呼び出される */
+    public void startScanDevice(){
+        isScanning = true;
+        bleLeScanner.startScan(scanCallback);
+    }
+
+    public void stopScanDevice(){
+        bleLeScanner.stopScan(scanCallback);
+    }
 }

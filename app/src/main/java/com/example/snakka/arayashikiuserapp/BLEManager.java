@@ -24,14 +24,20 @@ public class BLEManager {
     public BLEManager(Context context){
         this.context = context;
 
-        bleScanner = new BLEScanner();
+        initBleAdapter();
+        bleScanner = new BLEScanner(bleAdapter.getBluetoothLeScanner());
     }
 
 
-    /** 端末がBluetoothに対応しているか判定。非対応ならメッセージを表示 */
-    public boolean isBleSupport(Context context){
+    private void initBleAdapter(){
+        if(bleAdapter == null) return; //Adapterは複数作成しないようにすべき
+
         BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
         bleAdapter = bluetoothManager.getAdapter();
+    }
+
+    /** 端末がBluetoothに対応しているか判定。非対応ならメッセージを表示 */
+    public static boolean isBleSupport(Context context){
 
         //古い実装？:bleAdapter = BluetoothAdapter.getDefaultAdapter();
         if(bleAdapter == null){
@@ -49,5 +55,9 @@ public class BLEManager {
         }
     }
 
+
+    public void sensorNumGetter(){
+        bleScanner.startScanDevice();
+    }
 
 }
