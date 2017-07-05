@@ -90,8 +90,8 @@ public class BLEGattGetter {
     }
 
     public void connectGatt(Context context, BluetoothDevice device){
-        device.connectGatt(context, false, bleGattCallback);
-
+        bleGatt = device.connectGatt(context, false, bleGattCallback);
+        bleGatt.connect();
     }
 
 
