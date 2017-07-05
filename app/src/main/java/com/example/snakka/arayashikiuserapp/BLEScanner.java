@@ -17,8 +17,6 @@ public class BLEScanner {
     private BluetoothLeScanner bleLeScanner;
 
     public BLEScanner(BluetoothLeScanner bleLeScanner){
-        //scanCallback = initScanCallback();
-
         this.bleLeScanner = bleLeScanner;
     }
 
@@ -29,9 +27,9 @@ public class BLEScanner {
             /**
              * BLE端末が見つかった場合のコールバック。
              * @param callbackType このコールバックがどのように発動されたのか決定する。どれか1つの可能性があります。
-             *                     {link ScanSettings#CALLBACK_TYPE_ALL_MATCHES},
-             *                     {link ScanSettings#CALLBACK_TYPE_FIRST_MATCH} or
-             *                     {link ScanSettings#CALLBACK_TYPE_MATCH_LOST}
+             *                     {ScanSettings#CALLBACK_TYPE_ALL_MATCHES}
+             *                     {ScanSettings#CALLBACK_TYPE_FIRST_MATCH}
+             *                     {ScanSettings#CALLBACK_TYPE_MATCH_LOST}
              * @param result       BLEで受信した結果オブジェクト。
              */
             @Override
