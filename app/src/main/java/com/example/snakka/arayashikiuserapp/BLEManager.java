@@ -18,7 +18,6 @@ import java.util.List;
 public class BLEManager {
     private Context context;
     private static BluetoothAdapter bleAdapter = null;
-    private final static int REQUEST_ENABLE_BT = 1;
     private static BLEScanner bleScanner;
 
     public BLEManager(Context context){

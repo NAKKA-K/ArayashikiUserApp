@@ -12,7 +12,7 @@ import java.util.List;
 
 public class BLEScanner {
     private static final ScanCallback scanCallback = initScanCallback();
-    private static ArrayList<BluetoothDevice> deviceList = new ArrayList<BluetoothDevice>();
+    private static ArrayList<BluetoothDevice> deviceList = new ArrayList<>();
     private boolean isScanning = false;
     private BluetoothLeScanner bleLeScanner;
 
@@ -98,10 +98,17 @@ public class BLEScanner {
         bleLeScanner.startScan(scanCallback);
     }
 
+    /** BLEManagerで作られたインスタンスから呼び出される */
     public void stopScanDevice() {
         if(isScanning == false) return;
 
         isScanning = false;
         bleLeScanner.stopScan(scanCallback);
     }
+
+
+    public static ArrayList getDeviceList(){
+        return deviceList;
+    }
+
 }
