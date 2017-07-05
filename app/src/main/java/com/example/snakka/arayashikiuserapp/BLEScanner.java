@@ -92,11 +92,16 @@ public class BLEScanner {
 
     /** BLEManagerで作られたインスタンスから呼び出される */
     public void startScanDevice(){
+        if(isScanning == true) return;
+
         isScanning = true;
         bleLeScanner.startScan(scanCallback);
     }
 
-    public void stopScanDevice(){
+    public void stopScanDevice() {
+        if(isScanning == false) return;
+
+        isScanning = false;
         bleLeScanner.stopScan(scanCallback);
     }
 }
