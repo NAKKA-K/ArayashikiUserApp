@@ -16,9 +16,7 @@ public class BLEScanner {
     private boolean isScanning = false;
     private BluetoothLeScanner bleLeScanner;
 
-    public BLEScanner(BluetoothLeScanner bleLeScanner){
-        this.bleLeScanner = bleLeScanner;
-    }
+    public BLEScanner(BluetoothLeScanner bleLeScanner){ this.bleLeScanner = bleLeScanner; }
 
 
     /** scanCallback変数を初期化するメソッド */
