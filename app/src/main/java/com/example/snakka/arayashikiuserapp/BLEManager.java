@@ -3,23 +3,18 @@ package com.example.snakka.arayashikiuserapp;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
-import android.bluetooth.le.BluetoothLeScanner;
-import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanResult;
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
 import android.widget.Toast;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class BLEManager {
     private Context context;
     private static BluetoothAdapter bleAdapter = null;
     private static BLEScanner bleScanner;
+    private static BLEGattGetter bleGattGetter;
+
+
 
     public BLEManager(Context context){
         this.context = context;
@@ -28,6 +23,7 @@ public class BLEManager {
         initBleAdapter();
 
         bleScanner = new BLEScanner(bleAdapter.getBluetoothLeScanner());
+        bleGattGetter = new BLEGattGetter();
     }
 
 
@@ -60,6 +56,18 @@ public class BLEManager {
 
     public void sensorNumGetter(){
         bleScanner.startScanDevice();
+
+        //スキャン中は続ける
+        while(bleScanner.isScanning()){
+            bleScanner.stopScanDevice();
+        }
+
+        //TODO:正当な端末を自動で探す処理が必要
+
+        bleGattGetter.connectGatt(context, bleScanner.getDevice()); //切断は自動でしてくれる
+
+        //センサ番号の取得待ち
+        while(bleGattGetter.isGattGot()){}
     }
 
 }
