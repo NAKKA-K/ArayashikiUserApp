@@ -11,11 +11,14 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class BLEGattGetter {
     private BluetoothGattCallback bleGattCallback;
     private BluetoothGatt bleGatt = null;
-    private ArrayList<BluetoothGattService> gattServiceList;
+
+    private byte[] sensorNum;
 
     public BLEGattGetter(){
         bleGattCallback = initGattCallback();
@@ -37,12 +40,10 @@ public class BLEGattGetter {
             public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
                 super.onConnectionStateChange(gatt, status, newState);
 
-                if (newState != BluetoothProfile.STATE_CONNECTED){
-                    return;
-                }
+                if (newState != BluetoothProfile.STATE_CONNECTED) return;
 
-                bleGatt = gatt;
-                discoverService();
+                //bleGatt = gatt;
+                bleGatt.discoverServices();
             }
 
             /**
@@ -55,15 +56,13 @@ public class BLEGattGetter {
             @Override
             public void onServicesDiscovered(BluetoothGatt gatt, int status) {
                 super.onServicesDiscovered(gatt, status);
-                if(status != BluetoothGatt.GATT_SUCCESS){
-                    return;
-                }
 
-                gattServiceList = (ArrayList) gatt.getServices(); //TODO:ListとArrayListの互換性を確かめる必要あり
-                for(BluetoothGattService service : gattServiceList){
-                    //サービス一覧から既定のサービスを取得する必要がある
-                    //キャラクタリスティクスを取得したりもできる
-                }
+                if(status != BluetoothGatt.GATT_SUCCESS) return;
+
+                //サービスを取得->キャクタリスティクスを取得 ==> 読み込み開始(非同期実行)
+                BluetoothGattCharacteristic characteristic
+                        = bleGatt.getService( UUID.fromString("ABCD") ).getCharacteristic( UUID.fromString("ABCD") );
+                bleGatt.readCharacteristic(characteristic); //読み込めると、同じクラス内のonCharacteristicReadが呼ばれる。(非同期)
             }
 
 
@@ -81,10 +80,13 @@ public class BLEGattGetter {
             public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
                 super.onCharacteristicRead(gatt, characteristic, status);
 
-                if(status != BluetoothGatt.GATT_SUCCESS){
-                    return;
-                }
+                if(status != BluetoothGatt.GATT_SUCCESS) return;
 
+
+                //TODO:戻り値をint型に変換してやる必要あり
+                sensorNum = characteristic.getValue();
+
+                closeGatt();
             }
         };
     }
@@ -94,12 +96,10 @@ public class BLEGattGetter {
         bleGatt.connect();
     }
 
-
-    private void discoverService(){
+    public void closeGatt(){
         if(bleGatt == null) return;
 
-        bleGatt.discoverServices();
+        bleGatt.close();
     }
-
 
 }
