@@ -1,6 +1,5 @@
 package com.example.snakka.arayashikiuserapp;
 
-
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
@@ -14,9 +13,13 @@ public class BLEScanner {
     private static final ScanCallback scanCallback = initScanCallback();
     private static ArrayList<BluetoothDevice> deviceList = new ArrayList<>();
     private boolean isScanning = false;
-    private BluetoothLeScanner bleLeScanner;
+    private static BluetoothLeScanner bleLeScanner = null;
 
-    public BLEScanner(BluetoothLeScanner bleLeScanner){ this.bleLeScanner = bleLeScanner; }
+    public BLEScanner(BluetoothLeScanner bleLeScanner){
+        if(this.bleLeScanner == null) return;
+
+        this.bleLeScanner = bleLeScanner;
+    }
 
 
     /** scanCallback変数を初期化するメソッド */
@@ -103,8 +106,16 @@ public class BLEScanner {
     }
 
 
-    public static ArrayList getDeviceList(){
-        return deviceList;
+    public boolean isScanning(){
+        return isScanning;
+    }
+
+    public static BluetoothDevice getDevice() {
+        if(deviceList == null) return null;
+
+        //指定のデバイスを取得
+        //TODO:仮実装
+        return deviceList.get(0);
     }
 
 }
