@@ -1,28 +1,21 @@
 package com.example.snakka.arayashikiuserapp;
 
-
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
-import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class BLEGattGetter {
-    private BluetoothGattCallback bleGattCallback;
+    private final BluetoothGattCallback bleGattCallback = initGattCallback();
     private BluetoothGatt bleGatt = null;
 
+    private boolean isGattGot = false;
     private byte[] sensorNum;
 
-    public BLEGattGetter(){
-        bleGattCallback = initGattCallback();
-    }
 
     private BluetoothGattCallback initGattCallback(){
         return new BluetoothGattCallback() {
@@ -92,6 +85,7 @@ public class BLEGattGetter {
     }
 
     public void connectGatt(Context context, BluetoothDevice device){
+        isGattGot = false;
         bleGatt = device.connectGatt(context, false, bleGattCallback);
         bleGatt.connect();
     }
@@ -100,6 +94,11 @@ public class BLEGattGetter {
         if(bleGatt == null) return;
 
         bleGatt.close();
+        isGattGot = true;
+    }
+
+    public boolean isGattGot(){
+        return isGattGot;
     }
 
 }
