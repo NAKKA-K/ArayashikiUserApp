@@ -8,11 +8,12 @@ import android.content.Context;
 import android.widget.Toast;
 
 
-public class BLEManager {
+public class BLEManager{
     private Context context;
     private static BluetoothAdapter bleAdapter = null;
     private static BLEScanner bleScanner;
     private static BLEGattGetter bleGattGetter;
+
 
 
 
@@ -35,9 +36,7 @@ public class BLEManager {
     }
 
     /** 端末がBluetoothに対応しているか判定。非対応ならメッセージを表示 */
-    public static boolean isBleSupport(Context context){
-
-        //古い実装？:bleAdapter = BluetoothAdapter.getDefaultAdapter();
+    public boolean isBleSupport(){
         if(bleAdapter == null){
             Toast.makeText(context, "Bluetoothに対応していません", Toast.LENGTH_LONG).show();
             return false;
@@ -54,6 +53,7 @@ public class BLEManager {
     }
 
 
+    //TODO:非常にひどい一時的な実装
     public void sensorNumGetter(){
         bleScanner.startScanDevice();
 

@@ -14,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         bleMgr = new BLEManager(this);
-        if(bleMgr.isBleSupport(this) == false){
+        if(bleMgr.isBleSupport() == false){
             this.moveTaskToBack(true);
         }
 
