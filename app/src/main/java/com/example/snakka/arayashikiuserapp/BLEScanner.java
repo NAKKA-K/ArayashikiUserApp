@@ -4,21 +4,25 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
+import android.os.ParcelUuid;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class BLEScanner {
-    private static final ScanCallback scanCallback = initScanCallback();
-    private static ArrayList<BluetoothDevice> deviceList = new ArrayList<>();
+    private static BluetoothLeScanner bleLeScanner;
+    private static ScanCallback scanCallback;
+    private static BluetoothDevice sensorDevice;
     private boolean isScanning = false;
-    private static BluetoothLeScanner bleLeScanner = null;
 
-    public BLEScanner(BluetoothLeScanner bleLeScanner){
-        if(this.bleLeScanner == null) return;
+    private static String SENSOR_UUID;
 
+    public BLEScanner(BluetoothLeScanner bleLeScanner, String uuid){
         this.bleLeScanner = bleLeScanner;
+        this.SENSOR_UUID = uuid;
+
+        scanCallback = initScanCallback();
     }
 
 
@@ -37,56 +41,62 @@ public class BLEScanner {
             public void onScanResult(int callbackType, ScanResult result) {
                 super.onScanResult(callbackType, result);
 
+                //TODO:指定のデバイスが見つかったら代入
                 BluetoothDevice device = result.getDevice();
-                if(isAdded(device) == false){
-                    addDevice(device);
+                if(isSensorDevice(device) == false){
+                    setSensorDevice(device);
 
+                    //デバック用
                     Log.d("ScanDevice address:", device.getAddress());
                     Log.d("ScanDevice name:", device.getName());
 
                     String deviceName = result.getScanRecord().getDeviceName();
                     Log.i("ScanDevice", deviceName); //取得したデバイスの名前をlogに流す
+
                 }
 
             }
 
-            /**
-             * バッチ結果が配信されるときのコールバック。
+
+            /* バッチ結果が配信されるときのコールバック。onBatchScanResults(List<ScanResult> results)
              * @param results 以前にスキャンされた結果のリスト。
              */
-            @Override
-            public void onBatchScanResults(List<ScanResult> results) {
-                super.onBatchScanResults(results);
-            }
-
-            /**
-             * スキャンを開始できなかったときのコール。
-             * @param errorCode スキャン失敗したときのエラーコード(SCAN_FAILED_* の中の1つ)
+            /*スキャンを開始できなかったときのコール。onScanFailed(int errorCode)
+             *@param errorCode スキャン失敗したときのエラーコード(SCAN_FAILED_* の中の1つ)
              */
-            @Override
-            public void onScanFailed(int errorCode) {
-                super.onScanFailed(errorCode);
-            }
         };
     }
 
 
     /** deviceListにデバイスをセットする */
-    public static void addDevice(BluetoothDevice device){
-        /* //TODO:どちらの実装が良いか
-        if(deviceList == null){
-            deviceList = new ArrayList<BluetoothDevice>();
-        }*/
-        deviceList.add(device);
+    public static void setSensorDevice(BluetoothDevice device){
+        sensorDevice = device;
     }
 
-    /** deviceListにスキャンしたデバイスが追加されているかどうか */
-    public static boolean isAdded(BluetoothDevice device){
-        if(deviceList != null && deviceList.isEmpty() == false){
-            return deviceList.contains(device);
+    /** 保存されているセンサーと検出したセンサーが同じならtrue */
+    public boolean isEqualDevice(BluetoothDevice device){
+        if (this.sensorDevice != null || this.sensorDevice == device){
+            return true;
+        }else{
+            return false;
         }
+    }
+
+    /** deviceがセンサーであるか？ */
+    public static boolean isSensorDevice(BluetoothDevice device){
+        ParcelUuid[] uuids = device.getUuids();
+        if (uuids == null) return false;
+
+        //deviceのUUIDの中に、センサーと同じUUIDが存在すればセンサーと判定する
+        for(ParcelUuid uuid : uuids){
+            if(uuid.toString() == SENSOR_UUID){
+                return true;
+            }
+        }
+
         return false;
     }
+
 
 
     /** BLEManagerで作られたインスタンスから呼び出される */
@@ -110,12 +120,6 @@ public class BLEScanner {
         return isScanning;
     }
 
-    public static BluetoothDevice getDevice() {
-        if(deviceList == null) return null;
-
-        //指定のデバイスを取得
-        //TODO:仮実装
-        return deviceList.get(0);
-    }
+    public static BluetoothDevice getSensorDevice() { return sensorDevice; }
 
 }

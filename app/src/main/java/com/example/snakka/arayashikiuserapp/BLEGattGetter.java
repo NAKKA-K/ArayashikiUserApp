@@ -10,11 +10,19 @@ import android.content.Context;
 import java.util.UUID;
 
 public class BLEGattGetter {
-    private final BluetoothGattCallback bleGattCallback = initGattCallback();
-    private BluetoothGatt bleGatt = null;
-
+    private static BluetoothGattCallback bleGattCallback;
+    private BluetoothGatt bleGatt;
     private boolean isGattGot = false;
     private byte[] sensorNum;
+
+    private static String SENSOR_UUID;
+
+
+    public BLEGattGetter(String uuid){
+        this.SENSOR_UUID = uuid;
+
+        bleGattCallback = initGattCallback();
+    }
 
 
     private BluetoothGattCallback initGattCallback(){
@@ -35,7 +43,7 @@ public class BLEGattGetter {
 
                 if (newState != BluetoothProfile.STATE_CONNECTED) return;
 
-                //bleGatt = gatt;
+                //bleGatt = gatt; //こういう記述があったが必要なのか？
                 bleGatt.discoverServices();
             }
 
@@ -54,11 +62,10 @@ public class BLEGattGetter {
 
                 //サービスを取得->キャクタリスティクスを取得 ==> 読み込み開始(非同期実行)
                 BluetoothGattCharacteristic characteristic
-                        = bleGatt.getService( UUID.fromString("ABCD") ).getCharacteristic( UUID.fromString("ABCD") );
+                        = bleGatt.getService( UUID.fromString(SENSOR_UUID) ).getCharacteristic( UUID.fromString(SENSOR_UUID) );
+
                 bleGatt.readCharacteristic(characteristic); //読み込めると、同じクラス内のonCharacteristicReadが呼ばれる。(非同期)
             }
-
-
 
 
             /**
@@ -84,6 +91,8 @@ public class BLEGattGetter {
         };
     }
 
+
+    /** deviceに接続すると同時に、データの取得フラグをoffにする */
     public void connectGatt(Context context, BluetoothDevice device){
         isGattGot = false;
         bleGatt = device.connectGatt(context, false, bleGattCallback);
@@ -91,8 +100,6 @@ public class BLEGattGetter {
     }
 
     public void closeGatt(){
-        if(bleGatt == null) return;
-
         bleGatt.close();
         isGattGot = true;
     }

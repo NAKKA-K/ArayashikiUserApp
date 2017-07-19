@@ -4,16 +4,20 @@ package com.example.snakka.arayashikiuserapp;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.BluetoothLeScanner;
 import android.content.Context;
 import android.widget.Toast;
 
 
 public class BLEManager{
     private Context context;
-    private static BluetoothAdapter bleAdapter = null;
+    private static BluetoothAdapter bleAdapter;
+
+    private static final String SENSOR_UUID = "ABCD";
+
+    //別クラスを内部に保存する
     private static BLEScanner bleScanner;
     private static BLEGattGetter bleGattGetter;
-
 
 
 
@@ -23,11 +27,12 @@ public class BLEManager{
 
         initBleAdapter();
 
-        bleScanner = new BLEScanner(bleAdapter.getBluetoothLeScanner());
-        bleGattGetter = new BLEGattGetter();
+        bleScanner = new BLEScanner(bleAdapter.getBluetoothLeScanner(), SENSOR_UUID);
+        bleGattGetter = new BLEGattGetter(SENSOR_UUID);
     }
 
 
+    /** Adapterの取得 */
     private void initBleAdapter(){
         if(bleAdapter != null) return; //Adapterは複数作成しないようにすべき
 
@@ -55,16 +60,14 @@ public class BLEManager{
 
     //TODO:非常にひどい一時的な実装
     public void sensorNumGetter(){
-        bleScanner.startScanDevice();
+        bleScanner.startScanDevice(); //HACK:このままでは永遠にスキャンし続ける
 
-        //スキャン中は続ける
+        //TODO:スキャンが終わるまで待つ
         while(bleScanner.isScanning()){
             bleScanner.stopScanDevice();
         }
 
-        //TODO:正当な端末を自動で探す処理が必要
-
-        bleGattGetter.connectGatt(context, bleScanner.getDevice()); //切断は自動でしてくれる
+        bleGattGetter.connectGatt(context, bleScanner.getSensorDevice()); //切断は自動でしてくれる
 
         //センサ番号の取得待ち
         while(bleGattGetter.isGattGot()){}
