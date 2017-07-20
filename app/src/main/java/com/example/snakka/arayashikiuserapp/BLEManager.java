@@ -63,8 +63,8 @@ public class BLEManager{
         bleScanner.startScanDevice(); //HACK:このままでは永遠にスキャンし続ける
 
         //TODO:スキャンが終わるまで待つ
-        while(bleScanner.isScanning()){
-            bleScanner.stopScanDevice();
+        while(bleScanner.isScanning()){ //スキャン中
+            if(bleScanner.getIsEndScan()) bleScanner.stopScanDevice(); //スキャンが終了したらストップをかける
         }
 
         bleGattGetter.connectGatt(context, bleScanner.getSensorDevice()); //切断は自動でしてくれる

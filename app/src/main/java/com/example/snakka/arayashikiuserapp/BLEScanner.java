@@ -16,6 +16,7 @@ public class BLEScanner {
     private static BluetoothDevice sensorDevice;
     private boolean isScanning = false;
 
+    private static boolean isEndScan = false;
     private static String SENSOR_UUID;
 
     public BLEScanner(BluetoothLeScanner bleLeScanner, String uuid){
@@ -53,6 +54,8 @@ public class BLEScanner {
                     String deviceName = result.getScanRecord().getDeviceName();
                     Log.i("ScanDevice", deviceName); //取得したデバイスの名前をlogに流す
 
+
+                    BLEScanner.setTrueToIsEndScan(); //目的のデバイスのスキャンが終了したことを示すフラグをオンにする
                 }
 
             }
@@ -75,7 +78,7 @@ public class BLEScanner {
 
     /** 保存されているセンサーと検出したセンサーが同じならtrue */
     public boolean isEqualDevice(BluetoothDevice device){
-        if (this.sensorDevice != null || this.sensorDevice == device){
+        if (this.sensorDevice != null && this.sensorDevice == device){
             return true;
         }else{
             return false;
@@ -103,6 +106,7 @@ public class BLEScanner {
     public void startScanDevice(){
         if(isScanning == true) return;
 
+        isEndScan = false;
         isScanning = true;
         bleLeScanner.startScan(scanCallback);
     }
@@ -122,4 +126,6 @@ public class BLEScanner {
 
     public static BluetoothDevice getSensorDevice() { return sensorDevice; }
 
+    public static void setTrueToIsEndScan(){ isEndScan = true; }
+    public boolean getIsEndScan(){ return isEndScan; }
 }
