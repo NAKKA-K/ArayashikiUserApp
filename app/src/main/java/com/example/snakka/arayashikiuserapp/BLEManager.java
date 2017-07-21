@@ -6,14 +6,19 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
+import java.io.UnsupportedEncodingException;
 
-public class BLEManager extends AsyncTask<Void, Void, Byte[]> {
+
+public class BLEManager extends AsyncTask<Void, Void, Void> {
     private Context context;
     private static BluetoothAdapter bleAdapter;
+    private static String sensorNumStr;
 
     private static final String SENSOR_UUID = "ABCD";
+
 
     //別クラスを内部に保存する
     private static BLEScanner bleScanner;
@@ -60,16 +65,22 @@ public class BLEManager extends AsyncTask<Void, Void, Byte[]> {
 
 
     @Override
-    protected Byte[] doInBackground(Void... params) {
+    protected Void doInBackground(Void... params) {
         sensorNumGetter();
 
-        return bleGattGetter.getSensorNum();
+        return null;
     }
 
     @Override
-    protected void onPostExecute(Byte[] date){
+    protected void onPostExecute(Void params){
         //TODO:Byte[]をStringに変換して、sensor
+        try {
+            sensorNumStr = new String(bleGattGetter.getSensorNum(), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
+        Log.d("sensorNumStr:", sensorNumStr);
     }
 
 
