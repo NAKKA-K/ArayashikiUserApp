@@ -4,12 +4,12 @@ package com.example.snakka.arayashikiuserapp;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
-import android.bluetooth.le.BluetoothLeScanner;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.widget.Toast;
 
 
-public class BLEManager{
+public class BLEManager extends AsyncTask<Void, Void, Byte[]> {
     private Context context;
     private static BluetoothAdapter bleAdapter;
 
@@ -58,11 +58,26 @@ public class BLEManager{
     }
 
 
-    //TODO:非常にひどい一時的な実装
+
+    @Override
+    protected Byte[] doInBackground(Void... params) {
+        sensorNumGetter();
+
+        return bleGattGetter.getSensorNum();
+    }
+
+    @Override
+    protected void onPostExecute(Byte[] date){
+        //TODO:Byte[]をStringに変換して、sensor
+
+    }
+
+
+    //HACK:非常にひどい一時的な実装
     public void sensorNumGetter(){
         bleScanner.startScanDevice(); //HACK:このままでは永遠にスキャンし続ける
 
-        //TODO:スキャンが終わるまで待つ
+        //HACK:仕様として同期処理があればそちらに変更する
         while(bleScanner.isScanning()){ //スキャン中
             if(bleScanner.getIsEndScan()) bleScanner.stopScanDevice(); //スキャンが終了したらストップをかける
         }
