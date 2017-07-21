@@ -108,4 +108,15 @@ public class BLEGattGetter {
         return isGattGot;
     }
 
+
+    /** byte[]型のsensorNUmをByte[]型に変換して返す */
+    public Byte[] getSensorNum(){
+        Byte[] sensorNumByte = new Byte[this.sensorNum.length];
+
+        for(int i = 0; i < sensorNum.length; i++){
+            sensorNumByte[i] = sensorNum[i];
+        }
+        return sensorNumByte;
+    }
+
 }
