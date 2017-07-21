@@ -16,7 +16,7 @@ public class BLEScanner {
     private static BluetoothDevice sensorDevice;
     private boolean isScanning = false;
 
-    private static boolean isEndScan = false;
+    private boolean isEndScan = false;
     private static String SENSOR_UUID;
 
     public BLEScanner(BluetoothLeScanner bleLeScanner, String uuid){
@@ -28,7 +28,7 @@ public class BLEScanner {
 
 
     /** scanCallback変数を初期化するメソッド */
-    private static ScanCallback initScanCallback(){
+    private ScanCallback initScanCallback(){
         return new ScanCallback() {
             /**
              * BLE端末が見つかった場合のコールバック。
@@ -55,7 +55,7 @@ public class BLEScanner {
                     Log.i("ScanDevice", deviceName); //取得したデバイスの名前をlogに流す
 
 
-                    BLEScanner.setTrueToIsEndScan(); //目的のデバイスのスキャンが終了したことを示すフラグをオンにする
+                    setTrueToIsEndScan(); //目的のデバイスのスキャンが終了したことを示すフラグをオンにする
                 }
 
             }
@@ -126,6 +126,6 @@ public class BLEScanner {
 
     public static BluetoothDevice getSensorDevice() { return sensorDevice; }
 
-    public static void setTrueToIsEndScan(){ isEndScan = true; }
+    public void setTrueToIsEndScan(){ isEndScan = true; }
     public boolean getIsEndScan(){ return isEndScan; }
 }
