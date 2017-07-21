@@ -104,14 +104,11 @@ public class BLEGattGetter {
         isGattGot = true;
     }
 
+
     public boolean isGattGot(){
         return isGattGot;
     }
 
-
-    /** sensorNUmを返す */
-    public byte[] getSensorNum(){
-        return sensorNum;
-    }
+    public byte[] getSensorNum(){ return sensorNum; }
 
 }

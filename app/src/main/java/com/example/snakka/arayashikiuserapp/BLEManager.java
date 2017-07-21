@@ -99,4 +99,6 @@ public class BLEManager extends AsyncTask<Void, Void, Void> {
         while(bleGattGetter.isGattGot()){}
     }
 
+
+    public String getSensorNumStr(){ return sensorNumStr; }
 }
