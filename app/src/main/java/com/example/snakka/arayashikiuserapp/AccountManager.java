@@ -3,9 +3,15 @@ package com.example.snakka.arayashikiuserapp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -13,15 +19,18 @@ import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AccountManager {
+public class AccountManager extends Thread{
     private static String userName;
     private static String guardianMail;
     private static final String USER_NAME_KEY = "user_name_key";
     private static final String GUARDIAN_MAIL_KEY = "guardian_mail_key";
-    private static final String URL = "http://hoge.com/mana/userCreate";
+    private static final String URL = "http://59.106.210.231/mana/userCreate";
 
+    private static boolean postResCode = false;
+    private static String postResStr;
+    private static String userJson;
 
-    //アプリにログイン情報が残っているか
+    /** アプリにログイン情報が残っているか */
     public static boolean loginedAccount(Context context){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -34,7 +43,7 @@ public class AccountManager {
     }
 
 
-    //入力されたユーザー名の論理チェック
+    /** 入力されたユーザー名の論理チェック */
     public boolean isLogicalCheckName(String userName){
         //TODO:userNameに使ってはいけない文字が入っていないか検出。OKならtrue
         Pattern pattern = Pattern.compile(""); //弾くべき文字パターン
@@ -47,36 +56,66 @@ public class AccountManager {
         return true; //認める
     }
 
-    public int postAccountToServer(String userName, String guardianMail){
-        PrintWriter outputServer = null;
-        HttpURLConnection httpConecter = null;
-        int code = 0;
 
-        try{
-            //TODO:URLの記述方法が理解できていなかった為、要確認
-            URL url = new URL(URL);
-            //URL url = new URL(URL + "{" + userName + "," + guardianMail + "}");
-            httpConecter = (HttpURLConnection) url.openConnection();
-            httpConecter.setRequestMethod("POST");
-            httpConecter.setRequestProperty("Accept-Language", "jp");
-            httpConecter.connect();
+    /** サーバにアカウント登録のPOSTをする */
+    public boolean postAccountToServer(final String userName, final String guardianMail){
+        AsyncTask<Void, Void, Integer> test = new AsyncTask<Void, Void, Integer>() {
+            @Override
+            protected Integer doInBackground(Void... params) {
+                PrintStream outputServer = null;
+                HttpURLConnection httpConnector = null;
+                int resCode = 0;
 
-            code = httpConecter.getResponseCode(); //TODO:既存、登録、その他の3種類くらいで、条件分けする予定
-        }catch(MalformedURLException e){
-            //System.out.println("URLが不正です");
-        }catch(IOException e){
-            //System.out.println("接続失敗");
-        }finally{
-            if(outputServer != null) outputServer.close();
-            if(httpConecter != null) httpConecter.disconnect();
-        }
+                try{
+                    URL url = new URL(URL);
+                    httpConnector = (HttpURLConnection) url.openConnection();
+                    httpConnector.setRequestMethod("POST");
+                    httpConnector.setRequestProperty("Accept-Language", "jp");
+                    httpConnector.connect();
 
-        return code;
+                    resCode = httpConnector.getResponseCode();
+
+                    outputServer = new PrintStream(httpConnector.getOutputStream());
+                    outputServer.print(getUserJson(userName, guardianMail));
+                }catch(MalformedURLException e){
+                    //System.out.println("URLが不正です");
+                }catch(IOException e){
+                    //System.out.println("接続失敗");
+                }finally{
+                    if(outputServer != null) outputServer.close();
+                    if(httpConnector != null) httpConnector.disconnect();
+                }
+
+                return new Integer(resCode);
+            }
+
+            @Override
+            protected void onPostExecute(Integer resCode){
+                //TODO:既存、登録、その他の3種類くらいで、条件分けする予定
+                switch(resCode){
+                    case HttpURLConnection.HTTP_OK:
+                        postResStr = "OK!新規アカウント登録に成功しました";
+                        postResCode = true;
+                        break;
+                    default:
+                        postResStr = "NG!新規アカウント登録に失敗しました";
+                        postResCode = false;
+                }
+            }
+        };
+
+        test.execute();
+
+        return postResCode;
+    }
+
+    /** ユーザ名と保護者メールから、JSON形式のString型を作成して返す */
+    private String getUserJson(String userName, String guardianMail){
+        return "[{userName:" + userName + ", guardianMail:" + guardianMail + "}]";
     }
 
 
-
-    //ログインすると同時に、アカウント情報をアプリに記憶させる
+    /** ログインすると同時に、アカウント情報をアプリに記憶させる */
     public void loginAccount(Context context, String userName, String guardianMail){
         setUserName(userName);
         setGuardianMail(guardianMail);
@@ -89,7 +128,7 @@ public class AccountManager {
 
 
 
-    /*アカウント作成*/
+    /** アカウント作成 */
     private static void setUserName(String userName) { AccountManager.userName = userName; }
     private static void setGuardianMail(String guardianMail) { AccountManager.guardianMail = guardianMail; }
 
