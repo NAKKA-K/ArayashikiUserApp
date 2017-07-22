@@ -28,18 +28,17 @@ public class AccountCreateActivity extends AppCompatActivity {
         String userName = nameEdit.getText().toString();
         String guardianMail = mailEdit.getText().toString();
 
-        //受け付けない形式の文字列の場合、警告だけ表示して画面は変わらない
+        //TODO:受け付けない形式の文字列の場合、警告だけ表示して画面は変わらない
         if(accountMgr.isLogicalCheckName(userName) == false){
             return;
         }
 
 
-        //TODO:テスト実装
-        //サーバに問い合わせて、ユーザー情報の確認とログイン。
-        if(false){
+        //TODO:サーバに問い合わせて、ユーザー情報の確認とログイン。
+        if(accountMgr.postAccountToServer(userName, guardianMail)){
             accountMgr.loginAccount(view.getContext(), userName, guardianMail);
         }
-        finish();
 
+        finish();
     }
 }
