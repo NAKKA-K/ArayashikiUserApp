@@ -19,7 +19,13 @@ import java.net.URL;
  */
 
 public class HttpCommunication extends AsyncTask<Void, Void, String> {
-    private static final String JSONURL = "/mana/";
+    //private String JSONURL = "http://59.106.210.231/mana/";
+
+    private static final String PROTOCOL = "http";
+    private static final String HOST = "59.106.210.231";
+    private static final int PORT = 2000;
+    private static final String FILEPATH = "/mana/";
+    private String currentNo = "";
 
     private String block = "false";
 
@@ -32,16 +38,31 @@ public class HttpCommunication extends AsyncTask<Void, Void, String> {
     //TODO:信号機の状態今のところ実装なし
     //private String trafficLightSignal = "false";
 
+
+    public HttpCommunication(String currentNo){
+        this.currentNo = currentNo;
+    }
+
+    @Override
+    protected void onPreExecute() {
+        super.onPreExecute();
+        // doInBackground前処理
+    }
+
+    //
+    @Override
     protected String doInBackground(Void...v) {
         String resultJson = "";
         HttpURLConnection getCon = null;
         try {
-            URL url = new URL(JSONURL);
+            //URL url = new URL(JSONURL);
+            URL url = new URL(PROTOCOL, HOST, PORT, FILEPATH);
             getCon = (HttpURLConnection) url.openConnection();
+            //getCon.connect();
             //TODO：初期値で設定されているから必要ない？
             //getCon.setRequestMethod("GET");
             //getCon.setDoInput(true);
-            //getCon.connect();
+            //TODO:ResponseCodeは今の所使ってないので
             //int response = getCon.getResponseCode();
             resultJson = jsonStreamToString(getCon.getInputStream());
         } catch (Exception ex) {
@@ -73,6 +94,7 @@ public class HttpCommunication extends AsyncTask<Void, Void, String> {
 
     /* doInBackgroundの処理が終わった後で処理を開始する
         ・Jsonの取り扱いを行う*/
+    @Override
     protected void onPostExecute (String json){
         try {
             JSONObject jsonObject = new JSONObject(json);
