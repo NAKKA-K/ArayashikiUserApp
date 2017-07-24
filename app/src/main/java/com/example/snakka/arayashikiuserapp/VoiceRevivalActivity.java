@@ -99,7 +99,7 @@ public class VoiceRevivalActivity {
                     loadSuccessd[loadSuccessIndex] = true;
                     // 添え字をずらす
                     ++loadSuccessIndex;
-                    // とりあえず鳴らす(現段階でここはテスト用環境では鳴るようになってるが本番用環境では鳴らない！！！)
+                    // とりあえず鳴らす(現段階でここは鳴るようになった！)
                     soundPool.play(_SampleId, 1.0f, 1.0f, 0, 0, 1.0f);
                 }
             }
