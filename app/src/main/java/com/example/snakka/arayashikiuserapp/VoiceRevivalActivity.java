@@ -1,105 +1,186 @@
 package com.example.snakka.arayashikiuserapp;
 
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.widget.TextView;
 import java.util.Random;
 
-
-public class VoiceRevivalActivity extends AppCompatActivity {
-
+public class VoiceRevivalActivity {
+    //音声の属性を指定するクラス
     private AudioAttributes audioAttributes;
-    private SoundPool sp;
-    private int directionVoice[] = {
-            R.raw.front, //前
-            R.raw.right, //右
-            R.raw.left,  //左
-            R.raw.start, //に進めます
-            R.raw.stop   //行き止まりです
-    };
-    private String[] directionString = {
-            "前",
-            "右",
-            "左"
-    };
-    private int [] directionNum = new int[4]; //directionNumberGetメソッドから方向ナンバーを受け取るためのフィールド
-    private int [] soundVoice = new int[6];
+    //音声の読み込みや再生を行えるクラス
+    private SoundPool soundPool;
+    //センサーの方向ナンバーを受け取れるクラス
+    //private SensorNumber senNum;
 
-    //TODO:初期化
+    //音声リソース配列
+    private int voiceResources[] =
+            {
+                    R.raw.front, //前
+                    R.raw.right, //右
+                    R.raw.left,  //左
+                    R.raw.start, //に進めます
+                    R.raw.stop   //行き止まりです
+            };
+    //方向を示す文字列を格納した配列
+    private String[] directionTexts =
+            {
+                    "前",
+                    "右",
+                    "左"
+            };
+
+    //directionNumberGetメソッドから方向ナンバーを受け取るためのフィールド
+    private int[] directionNums = new int[5];
+    //読み込みをした際に受け取る音声Id配列
+    private int[] voiceIds = new int[6];
+
+
+    //音声ファイル読み込みの可否を格納する配列
+    private boolean loadSuccessd[] =
+            {
+                    false,
+                    false,
+                    false,
+                    false,
+                    false
+            };
+    // 読み込みが成功する度に1ずつ加算していく値
+    // 読み込みが完了しているかどうかをチェックする関数内で
+    // 上記の読み込み成否を格納する配列の添え字に使用する
+    private int loadSuccessIndex = 0;
+    // TextViewに表示する文字列を格納変数(後に戻り値となる)
+    private String viewString = "null";
+
+    // 初期化
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void initVoice() {
+    public VoiceRevivalActivity(Context context){
+
+        // 音声の属性を設定
         audioAttributes = new AudioAttributes.Builder()
                 // USAGE_MEDIA
                 // USAGE_GAME
-                .setUsage(AudioAttributes.USAGE_GAME)
+                .setUsage(AudioAttributes.USAGE_MEDIA)
                 // CONTENT_TYPE_MUSIC
                 // CONTENT_TYPE_SPEECH, etc.
                 .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                 .build();
 
-        sp = new SoundPool.Builder()
+        // SoundPoolクラス作成
+        soundPool = new SoundPool.Builder()
                 .setAudioAttributes(audioAttributes)
                 // ストリーム数に応じて
                 .setMaxStreams(2)
                 .build();
 
-        //音声をload
-        for(int i=0;i<directionVoice.length-1;i++) soundVoice[i] = sp.load(this,directionVoice[i],1);
+        //音声をロード
+        for (int i = 0; i < voiceResources.length; i++)
+            voiceIds[i] = soundPool.load(context,voiceResources[i], 1);
 
-        // load が終わったか確認する場合
-        sp.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+    }
+
+    //音声を再生するメソッド
+    public String startVoice() {
+        // 読み込みが終わったかどうか確認ができるクラスをインスタンス化
+        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+            // 読み込みが終わったか確認する関数
+            // 読み込みが非同期で行われているためか、
+            // この関数も非同期で行われるっぽい
+            // 1読み込みにつき1回この関数が呼ばれる
+            // そのため同じ音声に関しては1度読み込まれれば解放→再度読み込みとしない限り呼ばれることはない(byよーすけさん)
             @Override
-            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-                Log.d("debug","sampleId="+sampleId);
-                Log.d("debug","status="+status);
+            public void onLoadComplete(SoundPool _SoundPool, int _SampleId, int _Status) {
+                // 読み込みが成功している(_Statusが0)なら
+                if (_Status == 0)
+                {
+                    // 読み込み成否配列にtrueを入れる
+                    loadSuccessd[loadSuccessIndex] = true;
+                    // 添え字をずらす
+                    ++loadSuccessIndex;
+                    // とりあえず鳴らす(現段階でここはテスト用環境では鳴るようになってるが本番用環境では鳴らない！！！)
+                    soundPool.play(_SampleId, 1.0f, 1.0f, 0, 0, 1.0f);
+                }
             }
         });
-    }
 
-    //TODO:ナンバーを受け取るメソッド(今はテスト用)
-    public void directionNumberGet() {
-        int i = 0;
-        Random rand = new Random(); //とりあえず今はランダムに生成した数を方向ナンバーとする(本来はNumberOperationクラス内にあるメソッドから受け取る
-        while (i < directionNum.length) {
-            directionNum[i] = rand.nextInt(2);
-            if (directionNum[i] == 0 || directionNum[i] == 1) i++; //0の場合はその方向(前右左のいずれか)に進めなくて1の場合はその方向に進める
+        // 全部の音声の読み込みが成功しているか確認するローカル変数
+        boolean loadEnd = false;
+        // 全部の音声が読み込み成功しているかを判定
+        if (loadSuccessd[0] && loadSuccessd[1] && loadSuccessd[2] && loadSuccessd[3] && loadSuccessd[4])
+        {
+            // 成功しているならtrueを格納
+            loadEnd = true;
         }
-    }
 
-    //TODO:音声を再生するメソッド(これもテスト用でVoiceGuideActivityで文字を表示させるために戻り値ありのメソッドにするかも)
-    private void startVoice() {
-        TextView textView1 = (TextView) findViewById(R.id.textView1); //TextViewオブジェクト生成
-        TextView textView2 = (TextView) findViewById(R.id.textView2);
-        directionNumberGet(); //ナンバーを受け取る
-        String viewString = "";
+        // 無事全部読み込めてたら
+        if (loadEnd)
+        {
+            // ランダムでナンバーを受け取る(テスト用)
+            directionNumberGet();
 
-        for (int i = 0; i < directionNum.length-1; i++) {
-            if (directionNum[i] == 1) {
-                viewString += directionString[i] + " "; //前 右・・・といった感じでスペースを空けながら表示するため格納
-                sp.play(soundVoice[i], 1.0f, 1.0f, 0, 0, 1); //ここで行ける方向の音声を再生
+            // 方向ナンバーを受け取る(本番用)
+            // senNum = new SensorNumber();
+            // directionNums=senNum.getCouce();
+
+            for(int i=0;i<directionNums.length;i++)
+            {
+                directionNums[i]=1;
+            }
+
+            // 配列の中身を見てそれぞれに対応する音声を再生
+            // directionTextsが3つの配列なので条件文はlength-1にしておく
+            for (int i = 0; i < directionNums.length-1; i++)
+            {
+                if (directionNums[i] == 1)
+                {
+                    if(viewString.equals("null"))
+                    {
+                        viewString=directionTexts[i];
+                    }
+                    else
+                    {
+                        // 前 右・・・といった感じでスペースを空けながら表示するため空白を格納
+                        viewString += directionTexts[i] + " ";
+                    }
+                    // ここで行ける方向の音声を再生
+                    soundPool.play(voiceIds[i], 1.0f, 1.0f, 0, 0, 1);
+                }
+            }
+
+            // 前、右、左なら
+            if (directionNums[0] == 1 || directionNums[1] == 1 || directionNums[2] == 1)
+            {
+                // 「に進めます」の音声を再生
+                soundPool.play(voiceIds[3], 1.0f, 1.0f, 0, 0, 1);
+            }
+            else if(directionNums[0] == 0 && directionNums[1] == 0 && directionNums[2] == 0)
+            {
+                // 「行き止まりです」の音声を再生
+                soundPool.play(voiceIds[4], 1.0f, 1.0f, 0, 0, 1);
             }
         }
+        return viewString;
 
-        if (directionNum[0] == 1 || directionNum[1] == 1 || directionNum[2] == 1) {
-            sp.play(soundVoice[3], 1.0f, 1.0f, 0, 0, 1);
-            textView1.setText(viewString); //全てのテキスト表示
-            textView2.setText("に進めます");
-        } else {
-            sp.play(soundVoice[4], 1.0f, 1.0f, 0, 0, 1);
-            textView2.setText("行き止まりです");
-        }
-        releaseVoice();
     }
 
-
-    //TODO:メモリを解放するメソッド
-    private void releaseVoice() {
-        super.onDestroy();
+    // メモリを解放するメソッド
+    public void releaseVoice() {
         //SoundPoolの解放
-        sp.release();
+        soundPool.release();
+    }
+
+    // ナンバーを受け取るメソッド(テスト用)
+    public void directionNumberGet() {
+        int i = 0;
+        // とりあえず今はランダムに生成した数を方向ナンバーとする(本来はNumberOperationクラス内にあるメソッドから受け取る
+        Random rand = new Random();
+        while (i < directionNums.length)
+        {
+            directionNums[i] = rand.nextInt(2);
+            if (directionNums[i] == 0 || directionNums[i] == 1)
+                i++; //0の場合はその方向(前右左のいずれか)に進めなくて1の場合はその方向に進める
+        }
     }
 }

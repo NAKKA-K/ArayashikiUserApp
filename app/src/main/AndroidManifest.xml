@@ -21,7 +21,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".VoiceRevivalActivity"/>
+        <activity android:name=".VoiceGuideActivity"/>
 
         <activity android:name=".AccountCreateActivity" />
 
