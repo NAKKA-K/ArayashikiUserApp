@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -37,7 +38,7 @@ public class AccountManager{
 
     private static boolean postResCode = false;
     private static String postResStr;
-    private static String userJson;
+
 
     public AccountManager(Context context, final String userName, final String guardianMail){
         accountCreateContext = context;
@@ -54,8 +55,8 @@ public class AccountManager{
         if((userName = preferences.getString(USER_NAME_KEY, null)) == null) return false;
         if((guardianMail = preferences.getString(GUARDIAN_MAIL_KEY, null)) == null) return false;
 
-        //return true;
-        return false; //HACK:テスト実装で常にfalseにしている
+        //return true; //TODO:HACK:テスト実装で常にfalseにしている
+        return false;
     }
 
 
@@ -84,9 +85,7 @@ public class AccountManager{
                 HttpURLConnection httpConnector = null;
                 int resCode = 0;
 
-                Log.d("HTTP:", "doInBackground通過");
                 try {
-                    //URL url = new URL(URL + getUserJson(userName, guardianMail));
                     URL url = new URL(PROTOCOL, HOST, PORT, FILEPATH);
                     httpConnector = (HttpURLConnection) url.openConnection();
                     httpConnector.setRequestMethod("POST");
@@ -98,7 +97,6 @@ public class AccountManager{
 
                     //JSONをString型で送信
                     outputServer = new PrintStream(httpConnector.getOutputStream());
-//                    outputServer = new PrintStream(httpConnector.getOutputStream());
                     outputServer.print(getUserJson(userName, guardianMail));
                     outputServer.flush();
 
@@ -112,30 +110,29 @@ public class AccountManager{
                     if (httpConnector != null) httpConnector.disconnect();
                 }
 
-                Log.d("ResCode", "HTTP通信で返ってきた値は" + resCode);
-
 
                 //TODO:既存、登録、その他の3種類くらいで、条件分けする予定
-                switch (resCode) {
-                    case HttpURLConnection.HTTP_OK:
-                        postResStr = "OK!新規アカウント登録に成功しました";
-                        postResCode = true;
-                        break;
-                    case 404:
-                        postResStr = "ページが存在しない";
-                        break;
-                    default:
-                        postResStr = "NG!新規アカウント登録に失敗しました";
-                        postResCode = false;
-                }
+                Log.d("ResCode", "HTTP通信で返ってきた値は" + resCode);
 
-                return new Boolean(postResCode);
+                return new Boolean(isSuccess(resCode));
             }
 
+            /** HTTPのレスポンスコードを受け取って、成功か失敗かを画面に表示しつつ、booleanを返す */
+            public boolean isSuccess(int resCode){
+                resCode /= 100;
+                if(resCode == 2){
+                    Toast.makeText(accountCreateContext, "新規アカウントの登録に成功しました", Toast.LENGTH_SHORT).show();
+                    return true;
+                }else if(resCode == 5){
+                    Toast.makeText(accountCreateContext, "サーバ側のエラーです", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(accountCreateContext, "新規アカウントの登録に失敗しました", Toast.LENGTH_SHORT).show();
+                }
+                return false;
+            }
 
             @Override
             protected void onPostExecute(Boolean isResCode) {
-                Log.d("HTTP", "onPostExecute通過 => " + postResStr);
                 if (isResCode == false) {
                     return;
                 }
@@ -152,7 +149,6 @@ public class AccountManager{
     /** ユーザ名と保護者メールから、JSON形式のString型を作成して返す */
     private String getUserJson(String userName, String guardianMail){
         return "{\"userName\":\"" + userName + "\", \"guardianAdd\":\"" + guardianMail + "\"}";
-        //return "{userName:" + userName + ", guardianAdd:" + guardianMail + "}";
     }
 
 
@@ -169,7 +165,6 @@ public class AccountManager{
     /** アカウント作成 */
     private static void setUserName(String userName) { AccountManager.userName = userName; }
     private static void setGuardianMail(String guardianMail) { AccountManager.guardianMail = guardianMail; }
-
 
     public static String getUserName() { return userName; }
     public static String getGuardianMail() { return guardianMail; }
