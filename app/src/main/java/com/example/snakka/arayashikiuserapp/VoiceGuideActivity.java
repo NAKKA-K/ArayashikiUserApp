@@ -19,11 +19,11 @@ public class VoiceGuideActivity extends AppCompatActivity{
         // VoiceRevivalActivityクラスをインスタンス化
         // 再生機構の初期化
         voiceRev = new VoiceRevivalActivity(getApplicationContext());
-        // 音声再生
+        // 音声再生あんど格納された文字列を返す
         String viewString = voiceRev.startVoice();
 
-        // 返ってきたviewStringの中身が"null"のままだったら行き止まりと判定
-        if(viewString.equals("null"))
+        // 返ってきたviewStringの中身が空のままだったら行き止まりと判定
+        if(viewString.isEmpty())
         {
             textView2.setText("行き止まりです");
         }
@@ -32,8 +32,13 @@ public class VoiceGuideActivity extends AppCompatActivity{
             textView1.setText(viewString);
             textView2.setText("に進めます");
         }
+    }
 
-
+    //再生し終わったらメモリを解放
+    @Override
+    protected void  onDestroy()
+    {
+        voiceRev.releaseVoice();
     }
 
 

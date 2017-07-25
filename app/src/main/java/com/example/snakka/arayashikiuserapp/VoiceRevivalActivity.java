@@ -6,6 +6,7 @@ import android.media.AudioAttributes;
 import android.media.SoundPool;
 import android.os.Build;
 import java.util.Random;
+//import static com.example.snakka.arayashikiuserapp.SensorNumber.END;
 
 public class VoiceRevivalActivity {
     //音声の属性を指定するクラス
@@ -13,7 +14,7 @@ public class VoiceRevivalActivity {
     //音声の読み込みや再生を行えるクラス
     private SoundPool soundPool;
     //センサーの方向ナンバーを受け取れるクラス
-    //private SensorNumber senNum;
+    private SensorNumber senNum;
 
     //音声リソース配列
     private int voiceResources[] =
@@ -28,16 +29,14 @@ public class VoiceRevivalActivity {
     private String[] directionTexts =
             {
                     "前",
-                    "右",
-                    "左"
+                    "左",
+                    "右"
             };
 
     //directionNumberGetメソッドから方向ナンバーを受け取るためのフィールド
-    private int[] directionNums = new int[5];
+    private int[] directionNums = new int[4];
     //読み込みをした際に受け取る音声Id配列
     private int[] voiceIds = new int[6];
-
-
     //音声ファイル読み込みの可否を格納する配列
     private boolean loadSuccessd[] =
             {
@@ -50,9 +49,9 @@ public class VoiceRevivalActivity {
     // 読み込みが成功する度に1ずつ加算していく値
     // 読み込みが完了しているかどうかをチェックする関数内で
     // 上記の読み込み成否を格納する配列の添え字に使用する
-    private int loadSuccessIndex = 0;
+    private int loadSuccessIdx = 0;
     // TextViewに表示する文字列を格納変数(後に戻り値となる)
-    private String viewString = "null";
+    private String viewString = "";
 
     // 初期化
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -72,13 +71,12 @@ public class VoiceRevivalActivity {
         soundPool = new SoundPool.Builder()
                 .setAudioAttributes(audioAttributes)
                 // ストリーム数に応じて
-                .setMaxStreams(2)
+                .setMaxStreams(4)
                 .build();
 
         //音声をロード
         for (int i = 0; i < voiceResources.length; i++)
             voiceIds[i] = soundPool.load(context,voiceResources[i], 1);
-
     }
 
     //音声を再生するメソッド
@@ -95,10 +93,8 @@ public class VoiceRevivalActivity {
                 // 読み込みが成功している(_Statusが0)なら
                 if (_Status == 0)
                 {
-                    // 読み込み成否配列にtrueを入れる
-                    loadSuccessd[loadSuccessIndex] = true;
-                    // 添え字をずらす
-                    ++loadSuccessIndex;
+                    // 読み込み成否配列にtrueを入れて添え字をずらす
+                    loadSuccessd[loadSuccessIdx++] = true;
                     // デバッグ用としてとりあえず鳴らす(現段階でここはちゃんと鳴るようになった！)
                     soundPool.play(_SampleId, 1.0f, 1.0f, 0, 0, 1.0f);
                 }
@@ -114,7 +110,7 @@ public class VoiceRevivalActivity {
             loadEnd = true;
         }
 
-        // 無事全部読み込めてたら
+        // 無事全部読み込めてたら(なぜか読み込めているはずなのにここのifを通ってくれない・・・。)
         if (loadEnd)
         {
             // ランダムでナンバーを受け取る(テスト用)
@@ -122,28 +118,22 @@ public class VoiceRevivalActivity {
 
             // 方向ナンバーを受け取る(本番用)
             // senNum = new SensorNumber();
-            // directionNums=senNum.getCouce();
+            //directionNums = senNum.getCourse();
 
-            for(int i=0;i<directionNums.length;i++)
+            /*//テスト用として全ての方向に行けるとし、音声を鳴らしてみる
+            for(int i=0;i<directionNums.length-1;i++)
             {
                 directionNums[i]=1;
-            }
+            }*/
 
             // 配列の中身を見てそれぞれに対応する音声を再生
             // directionTextsが3つの配列なので条件文はlength-1にしておく
-            for (int i = 0; i < directionNums.length-1; i++)
+            for (int i = 0;i<directionNums.length-1; i++)
             {
                 if (directionNums[i] == 1)
                 {
-                    if(viewString.equals("null"))
-                    {
-                        viewString=directionTexts[i];
-                    }
-                    else
-                    {
-                        // 前 右・・・といった感じでスペースを空けながら表示するため空白を格納
-                        viewString += directionTexts[i] + " ";
-                    }
+                    // 前 右・・・といった感じでスペースを空けながら表示するため空白を格納
+                    viewString += directionTexts[i] + " ";
                     // ここで行ける方向の音声を再生
                     soundPool.play(voiceIds[i], 1.0f, 1.0f, 0, 0, 1);
                 }
@@ -161,8 +151,8 @@ public class VoiceRevivalActivity {
                 soundPool.play(voiceIds[4], 1.0f, 1.0f, 0, 0, 1);
             }
         }
+        //文字列を返す
         return viewString;
-
     }
 
     // メモリを解放するメソッド
@@ -176,7 +166,7 @@ public class VoiceRevivalActivity {
         int i = 0;
         // とりあえず今はランダムに生成した数を方向ナンバーとする(本来はNumberOperationクラス内にあるメソッドから受け取る
         Random rand = new Random();
-        while (i < directionNums.length)
+        while (i < directionNums.length-1)
         {
             directionNums[i] = rand.nextInt(2);
             if (directionNums[i] == 0 || directionNums[i] == 1)
