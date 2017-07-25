@@ -26,7 +26,7 @@ public class AccountCreateActivity extends AppCompatActivity {
 //TODO:HACK String userName = nameEdit.getText().toString();
 //TODO:HACK String guardianMail = mailEdit.getText().toString();
         String userName = "tester";
-        String guardianMail = "kd1208740@st.kobedenshi.ac.jp";
+        String guardianMail = "testeraccount@tester.jp";
 
 
         AccountManager accountMgr = new AccountManager(this, userName, guardianMail);
@@ -38,9 +38,7 @@ public class AccountCreateActivity extends AppCompatActivity {
             return;
         }
 
-        //TODO:サーバに問い合わせて、ユーザー情報の確認とログイン。
         accountMgr.postAccountToServer(userName, guardianMail);
-
     }
 
 }

@@ -4,6 +4,7 @@ package com.example.snakka.arayashikiuserapp;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -24,24 +25,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AccountManager{
-    private static Context accountCreateContext;
+    private static Activity accountCreateContext;
     private static String userName;
     private static String guardianMail;
     private static final String USER_NAME_KEY = "user_name_key";
     private static final String GUARDIAN_MAIL_KEY = "guardian_mail_key";
 
-    //private static final String URL = "http://59.106.210.231:3000/mana/userCreate";
     private static final String PROTOCOL = "http";
     private static final String HOST = "59.106.210.231";
     private static final int PORT = 3000;
     private static final String FILEPATH = "mana/userCleate/";
 
 
-    private static boolean postResCode = false;
-    private static String postResStr;
-
-
-    public AccountManager(Context context, final String userName, final String guardianMail){
+    public AccountManager(Activity context, final String userName, final String guardianMail){
         accountCreateContext = context;
         this.userName = userName;
         this.guardianMail = guardianMail;
@@ -70,53 +66,23 @@ public class AccountManager{
         if(matcher.find()){
             return false; //認められない
         }
-
         return true; //認める
     }
 
 
     /** サーバにアカウント登録のPOSTをする */
     public void postAccountToServer(final String userName, final String guardianMail){
-        postResCode = false; //初期化
-
         new AsyncTask<Void, String, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
-                PrintStream outputServer = null;
-                HttpURLConnection httpConnector = null;
-                int resCode = 0;
-
-                try {
-                    URL url = new URL(PROTOCOL, HOST, PORT, FILEPATH);
-                    httpConnector = (HttpURLConnection) url.openConnection();
-                    httpConnector.setRequestMethod("POST");
-                    httpConnector.setDoOutput(true);
-                    httpConnector.setRequestProperty("Content-Type", "application/json");
-                    httpConnector.setRequestProperty("Accept", "application/json");
-
-                    httpConnector.connect();
-
-                    //JSONをString型で送信
-                    outputServer = new PrintStream(httpConnector.getOutputStream());
-                    outputServer.print(getUserJson(userName, guardianMail));
-                    outputServer.flush();
-
-                    resCode = httpConnector.getResponseCode();
-                } catch (MalformedURLException e) {
-                    Log.e("例外発生", "URLが不正です", e);
-                } catch (IOException e) {
-                    Log.e("例外発生", "接続失敗", e);
-                } finally {
-                    if (outputServer != null) outputServer.close();
-                    if (httpConnector != null) httpConnector.disconnect();
-                }
-
+                //http通信でデータを送信して、レスポンスコードを受け取っている
+                int resCode = httpDataPost(HOST, PORT, FILEPATH, getUserJson(userName, guardianMail));
 
                 return new Boolean(isSuccess(resCode));
             }
 
             /** HTTPのレスポンスコードを受け取って、成功か失敗かを画面に表示しつつ、booleanを返す */
-            public boolean isSuccess(int resCode){ //TODO:既存、登録、その他の3種類くらいで、条件分けする予定
+            private boolean isSuccess(int resCode){ //TODO:既存、登録、その他の3種類くらいで、条件分けする予定
                 Log.d("ResCode", "HTTP通信で返ってきた値は" + resCode);
 
                 resCode /= 100;
@@ -138,17 +104,15 @@ public class AccountManager{
 
             @Override
             protected void onPostExecute(Boolean isResCode) {
-                if (isResCode == false) {
-                    return;
-                }
+                if (isResCode == false) return;
 
                 loginAccount();
-                Log.d("End", "終了！！");
+                accountCreateContext.finish();
             }
 
         }.execute();
-
     }
+
 
     /** ユーザ名と保護者メールから、JSON形式のString型を作成して返す */
     private String getUserJson(String userName, String guardianMail){
@@ -164,6 +128,41 @@ public class AccountManager{
         editor.commit();
     }
 
+
+
+    /** HTTP通信でPOSTをするときに、JSONのデータを送るメソッド */
+    public static int httpDataPost(final String HOST, final int PORT, final String PATH, String postData){
+        PrintStream outputServer = null;
+        HttpURLConnection httpConnector = null;
+        int resCode = 0;
+
+        try {
+            URL url = new URL("http", HOST, PORT, PATH);
+            httpConnector = (HttpURLConnection) url.openConnection();
+            httpConnector.setRequestMethod("POST");
+            httpConnector.setDoOutput(true);
+            httpConnector.setRequestProperty("Content-Type", "application/json");
+            httpConnector.setRequestProperty("Accept", "application/json");
+
+            httpConnector.connect();
+
+            //JSONをString型で送信
+            outputServer = new PrintStream(httpConnector.getOutputStream());
+            outputServer.print(postData);
+            outputServer.flush();
+
+            resCode = httpConnector.getResponseCode();
+        } catch (MalformedURLException e) {
+            Log.e("例外発生", "URLが不正です", e);
+        } catch (IOException e) {
+            Log.e("例外発生", "接続失敗", e);
+        } finally {
+            if (outputServer != null) outputServer.close();
+            if (httpConnector != null) httpConnector.disconnect();
+        }
+
+        return resCode;
+    }
 
 
     /** アカウント作成 */
