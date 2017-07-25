@@ -80,7 +80,7 @@ public class AccountManager{
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
-                PrintWriter outputServer = null;
+                PrintStream outputServer = null;
                 HttpURLConnection httpConnector = null;
                 int resCode = 0;
 
@@ -97,7 +97,7 @@ public class AccountManager{
                     httpConnector.connect();
 
                     //JSONをString型で送信
-                    outputServer = new PrintWriter(httpConnector.getOutputStream());
+                    outputServer = new PrintStream(httpConnector.getOutputStream());
 //                    outputServer = new PrintStream(httpConnector.getOutputStream());
                     outputServer.print(getUserJson(userName, guardianMail));
                     outputServer.flush();
