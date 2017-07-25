@@ -20,11 +20,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            android:screenOrientation="portrait"
         </activity>
 
-        <activity android:name=".VoiceRevivalActivity"/>
+        <activity android:name=".VoiceRevivalActivity">
+            android:screenOrientation="portrait"
+        </activity>
 
-        <activity android:name=".AccountCreateActivity" />
+        <activity android:name=".AccountCreateActivity">
+            android:screenOrientation="portrait"
+        </activity>
 
     </application>
 
