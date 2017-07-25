@@ -23,8 +23,8 @@ public class AccountCreateActivity extends AppCompatActivity {
     /*createButtonを押された時の動作
      *入力されたデータを解析して問題が無ければ登録後、スタート画面に戻る*/
     public void onCreateButtonClick(View view){
-//        String userName = nameEdit.getText().toString();
-//        String guardianMail = mailEdit.getText().toString();
+//TODO:HACK String userName = nameEdit.getText().toString();
+//TODO:HACK String guardianMail = mailEdit.getText().toString();
         String userName = "tester";
         String guardianMail = "kd1208740@st.kobedenshi.ac.jp";
 
@@ -37,7 +37,6 @@ public class AccountCreateActivity extends AppCompatActivity {
             Toast.makeText(this, "使用できない文字が使われています", Toast.LENGTH_SHORT).show();
             return;
         }
-
 
         //TODO:サーバに問い合わせて、ユーザー情報の確認とログイン。
         accountMgr.postAccountToServer(userName, guardianMail);

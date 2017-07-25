@@ -1,6 +1,7 @@
 package com.example.snakka.arayashikiuserapp;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -78,7 +79,7 @@ public class AccountManager{
     public void postAccountToServer(final String userName, final String guardianMail){
         postResCode = false; //初期化
 
-        new AsyncTask<Void, Void, Boolean>() {
+        new AsyncTask<Void, String, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
                 PrintStream outputServer = null;
@@ -111,24 +112,28 @@ public class AccountManager{
                 }
 
 
-                //TODO:既存、登録、その他の3種類くらいで、条件分けする予定
-                Log.d("ResCode", "HTTP通信で返ってきた値は" + resCode);
-
                 return new Boolean(isSuccess(resCode));
             }
 
             /** HTTPのレスポンスコードを受け取って、成功か失敗かを画面に表示しつつ、booleanを返す */
-            public boolean isSuccess(int resCode){
+            public boolean isSuccess(int resCode){ //TODO:既存、登録、その他の3種類くらいで、条件分けする予定
+                Log.d("ResCode", "HTTP通信で返ってきた値は" + resCode);
+
                 resCode /= 100;
                 if(resCode == 2){
-                    Toast.makeText(accountCreateContext, "新規アカウントの登録に成功しました", Toast.LENGTH_SHORT).show();
+                    publishProgress("新規アカウントの登録に成功しました"); //onProgressUpdateを呼ぶためのメソッド
                     return true;
                 }else if(resCode == 5){
-                    Toast.makeText(accountCreateContext, "サーバ側のエラーです", Toast.LENGTH_SHORT).show();
+                    publishProgress("サーバー側のエラーです");
                 }else{
-                    Toast.makeText(accountCreateContext, "新規アカウントの登録に失敗しました", Toast.LENGTH_SHORT).show();
+                    publishProgress("新規アカウントの登録に失敗しました");
                 }
                 return false;
+            }
+
+            @Override
+            protected void onProgressUpdate(String... params){
+                Toast.makeText(accountCreateContext, params[0], Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -138,7 +143,6 @@ public class AccountManager{
                 }
 
                 loginAccount();
-
                 Log.d("End", "終了！！");
             }
 
