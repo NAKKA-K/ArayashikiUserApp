@@ -12,12 +12,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+<<<<<<< Updated upstream
 
         bleMgr = new BLEManager(this);
         if(bleMgr.isBleSupport() == false){
             this.moveTaskToBack(true);
         }
 
+=======
+>>>>>>> Stashed changes
     }
 
 
