@@ -4,17 +4,17 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    BLEManager bleMgr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        bleMgr = new BLEManager(this);
-        if(bleMgr.isBleSupport() == false){
+        if(BLEManager.isBleSupport() == false){
+            Toast.makeText(this, "Bluetoothに対応していません", Toast.LENGTH_LONG).show();
             this.finishAndRemoveTask();
         }
 
@@ -31,9 +31,6 @@ public class MainActivity extends AppCompatActivity {
         if(AccountManager.loginedAccount(view.getContext()) == true){
             Intent intent = new Intent(MainActivity.this, VoiceRevivalActivity.class);
             startActivity(intent);
-
-
-            bleMgr.onBluetooth(this); //Bluetoothを起動
             return;
         }
 

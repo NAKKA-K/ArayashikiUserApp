@@ -19,6 +19,9 @@ public class VoiceRevivalActivity extends AppCompatActivity {
     };
     int directionNum; //directionNumberGetメソッドから方向ナンバーを受け取るためのフィールド
 
+    private static BLEManager bleMgr;
+
+
     @SuppressWarnings("deprecation") //soundpoolの警告回避
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +48,11 @@ public class VoiceRevivalActivity extends AppCompatActivity {
         {
             directionVoice[i] = sp.load(this, directionVoice[i], 1);
         }
+
+
+
+        //BLE通信
+        initBLE();
     }
 
     //ナンバーを受け取るメソッド
@@ -90,5 +98,12 @@ public class VoiceRevivalActivity extends AppCompatActivity {
         sp.release();
     }
 
+
+    /** BLE通信をするために必要な前準備を実装したメソッド */
+    private void initBLE(){
+        bleMgr = new BLEManager(this);
+
+        bleMgr.onBluetooth(this); //Bluetoothを起動
+    }
 
 }

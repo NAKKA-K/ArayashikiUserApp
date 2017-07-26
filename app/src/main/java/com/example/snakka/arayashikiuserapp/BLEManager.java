@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 
 
 public class BLEManager extends AsyncTask<Void, Void, Void> {
@@ -27,23 +28,22 @@ public class BLEManager extends AsyncTask<Void, Void, Void> {
     public BLEManager(Context context){
         this.context = context;
 
-        initBleAdapter();
-
         bleScanner = new BLEScanner(bleAdapter.getBluetoothLeScanner(), SENSOR_UUID);
         bleGattGetter = new BLEGattGetter(SENSOR_UUID);
     }
 
 
     /** Adapterの取得 */
-    private void initBleAdapter(){
+    private static void initBleAdapter(){
         if(bleAdapter != null) return; //Adapterは複数作成しないようにすべき
 
-        BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
-        bleAdapter = bluetoothManager.getAdapter();
+        bleAdapter = ((BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
     }
 
     /** 端末がBluetoothに対応しているか判定。非対応ならメッセージを表示 */
-    public boolean isBleSupport(){
+    public static boolean isBleSupport(){
+        initBleAdapter();
+
         if(bleAdapter == null){
             Toast.makeText(context, "Bluetoothに対応していません", Toast.LENGTH_LONG).show();
             return false;
@@ -94,9 +94,29 @@ public class BLEManager extends AsyncTask<Void, Void, Void> {
         }
 
         Log.d("sensorNumStr:", sensorNumStr);
+
+
+        //setSensorList(sensorNumStr);
     }
 
+    /* //こんな感じの奴作ってくれれば、こちらからsetします
+    static ArrayList<String> sensorList = new ArrayList<String>();
+    public static void setSensorList(String sensorStr){
+        if(sensorList.get(sensorList.size() - 1) == sensorStr) return; //連続して同じセンサーは受け付けない
 
+        sensorList.add(sensorStr); //センサーを順次追加
+    }
+
+    public static String getSensorList(){
+        if(sensorList == null) return null; //Listがnullでないか
+
+        //先頭から取得し、取得したら破棄
+        String str = sensorList.get(0);
+        sensorList.remove(0);
+
+        return str;
+    }
+    */
 
     public String getSensorNumStr(){ return sensorNumStr; }
     public void setSensorNumStr(String numStr){ sensorNumStr = numStr; }
