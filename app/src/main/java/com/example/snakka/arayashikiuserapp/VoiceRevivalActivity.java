@@ -122,7 +122,6 @@ public class VoiceRevivalActivity {
                                 // 前 右・・・といった感じでスペースを空けながら表示するため空白を格納
                                 viewString += directionTexts[i] + " ";
                                 // ここで行ける方向の音声を再生
-                                // 今のままだと音が重なって再生されてしまう
                                 soundPool.play(voiceIds[i], 1.0f, 1.0f, 0, 0, 1);
                                 //音声再生の待ち時間
                                 try {
@@ -150,7 +149,7 @@ public class VoiceRevivalActivity {
     // ナンバーを受け取るメソッド(テスト用)
     public void directionNumberGet() {
         int i = 0;
-        // とりあえず今はランダムに生成した数を方向ナンバーとする(本来はNumberSensorクラス内にあるgetCourseメソッドから受け取る
+        // とりあえず今はランダムに生成した数を方向ナンバーとする(本来はSensorNumberクラス内にあるgetCourseメソッドから受け取る
         Random rand = new Random();
         while (i < directionNums.length-1)
         {
