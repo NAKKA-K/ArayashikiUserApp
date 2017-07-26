@@ -7,8 +7,6 @@
     <string name="create_text">登録</string>
     <string name="login_text">登録済みの場合</string>
     <string name="voice_guide_title_text">音声案内画面</string>
-    <string name="voice_scene">音声再生(仮)画面</string>
-    <string name="front">前</string>
-    <string name="right">右</string>
-    <string name="left">左</string>
+    <string name="voice_scene">音声再生画面</string>
+    <string name="def">"  "</string>
 </resources>
