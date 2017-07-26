@@ -52,7 +52,7 @@ public class AccountManager{
     /** 入力されたユーザー名の論理チェック */
     public boolean isLogicalCheckName(String userName){
         //TODO:userNameに使ってはいけない文字が入っていないか検出。OKならtrue
-        Pattern pattern = Pattern.compile("[ .,]"); //弾くべき文字パターン
+        Pattern pattern = Pattern.compile("[^a-zA-Z0-9_-]"); //これ以外の文字が含まれると弾く
         Matcher matcher = pattern.matcher(userName);
 
         if(matcher.find()){
