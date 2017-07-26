@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -19,11 +20,17 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            android:screenOrientation="portrait"
         </activity>
 
-        <activity android:name=".VoiceGuideActivity"/>
+        <activity android:name=".VoiceGuideActivity">
+            android:screenOrientation="portrait"
+        </activity>
 
-        <activity android:name=".AccountCreateActivity" />
+        <activity android:name=".AccountCreateActivity">
+            android:screenOrientation="portrait"
+        </activity>
+
     </application>
 
 </manifest>
