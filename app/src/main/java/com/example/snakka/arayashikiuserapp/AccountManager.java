@@ -104,7 +104,7 @@ public class AccountManager{
 
             @Override
             protected void onPostExecute(Boolean isResCode) {
-                if (isResCode == false) return;
+                if (isResCode == false) return; //TODO:HACK:isResCode.FALSE == falseにしなければいけないのではないか
 
                 loginAccount();
                 accountCreateContext.finish();
