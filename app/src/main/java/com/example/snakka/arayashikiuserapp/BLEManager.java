@@ -39,18 +39,17 @@ public class BLEManager extends AsyncTask<Void, Void, Void> implements OnCancelL
 
 
     /** Adapterの取得 */
-    private static void initBleAdapter(){
+    private static void initBleAdapter(Context context){
         if(bleAdapter != null) return; //Adapterは複数作成しないようにすべき
 
         bleAdapter = ((BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE)).getAdapter();
     }
 
     /** 端末がBluetoothに対応しているか判定。非対応ならメッセージを表示 */
-    public static boolean isBleSupport(){
-        initBleAdapter();
+    public static boolean isBleSupport(Context context){
+        initBleAdapter(context);
 
         if(bleAdapter == null){
-            Toast.makeText(context, "Bluetoothに対応していません", Toast.LENGTH_LONG).show();
             return false;
         }
 
@@ -108,8 +107,7 @@ public class BLEManager extends AsyncTask<Void, Void, Void> implements OnCancelL
         Log.d("sensorNumStr:", sensorNumStr);
 
 
-        //setSensorList(sensorNumStr);
-
+        //HttpCommunication.setSensorList(sensorNumStr);
 
         //TODO:HACK:場合によっては、センサーのスキャン終了時に呼び出す方が良い場合もある
         this.execute(); //スレッドが終了する直前に、次のスレッドを開始してBLE通信を続ける
@@ -125,52 +123,9 @@ public class BLEManager extends AsyncTask<Void, Void, Void> implements OnCancelL
     }
 
 
-
-    /* //こんな感じの奴作ってくれれば、こちらからsetします
-    static ArrayList<String> sensorList = new ArrayList<String>();
-    public static void setSensorList(String sensorStr){
-        if(sensorList.get(sensorList.size() - 1) == sensorStr) return; //連続して同じセンサーは受け付けない
-
-        sensorList.add(sensorStr); //センサーを順次追加
-    }
-
-    public static String getSensorList(){
-        if(sensorList == null) return null; //Listがnullでないか
-
-        //先頭から取得し、取得したら破棄
-        String str = sensorList.get(0);
-        sensorList.remove(0);
-
-        return str;
-    }
-    */
-
     public String getSensorNumStr(){ return sensorNumStr; }
     public void setSensorNumStr(String numStr){ sensorNumStr = numStr; }
 
     public ProgressDialog getProDialog(){ return proDialog; }
 }
 
-/*
-    private static BLEManager bleMgr;
-
-onCreate
-        //BLE通信
-        initBLE();
-onResume
-        //BLE
-        Log.d("onResume", "scan開始だってばよ");
-        bleMgr.execute(); //BLEスキャン開始
-onPause
-        //BLE
-        bleMgr.getProDialog().cancel();
-        Log.d("onPause", "cancelだってばよ");
-
-BLE通信をするために必要な前準備を実装したメソッド
-private void initBLE(){
-    bleMgr = new BLEManager(this);
-
-    bleMgr.onBluetooth(this); //Bluetoothを起動
-}
-
-*/

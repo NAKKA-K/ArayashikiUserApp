@@ -13,9 +13,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(BLEManager.isBleSupport() == false){
+        if(BLEManager.isBleSupport(this) == false){
             Toast.makeText(this, "Bluetoothに対応していません", Toast.LENGTH_LONG).show();
-            this.finishAndRemoveTask();
+            //TODO:HACK:仮想マシンでは絶対に終了してしまうので、一時コメント化
+            //this.finishAndRemoveTask();
         }
 
     }
