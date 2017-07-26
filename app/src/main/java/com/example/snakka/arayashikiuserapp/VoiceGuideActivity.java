@@ -6,7 +6,7 @@ import android.widget.TextView;
 
 
 public class VoiceGuideActivity extends AppCompatActivity{
-    private VoiceRevivalActivity voiceRev;
+    private VoiceRevival voiceRev;
     private TextView textView1,textView2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,7 +18,7 @@ public class VoiceGuideActivity extends AppCompatActivity{
 
         // VoiceRevivalActivityクラスをインスタンス化
         // 再生機構の初期化
-        voiceRev = new VoiceRevivalActivity(getApplicationContext());
+        voiceRev = new VoiceRevival(getApplicationContext());
         // 音声再生あんど格納された文字列を返す
         String viewString = voiceRev.startVoice();
 

@@ -9,7 +9,7 @@ import android.os.Build;
 import java.util.Random;
 //import static com.example.snakka.arayashikiuserapp.SensorNumber.END;
 
-public class VoiceRevivalActivity {
+public class VoiceRevival {
     //音声の属性を指定するクラス
     private AudioAttributes audioAttributes;
     //音声の読み込みや再生を行えるクラス
@@ -55,7 +55,7 @@ public class VoiceRevivalActivity {
 
     // 初期化
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public VoiceRevivalActivity(Context context){
+    public VoiceRevival(Context context){
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
@@ -110,7 +110,7 @@ public class VoiceRevivalActivity {
                         // senNum = new SensorNumber();
                         // directionNums = senNum.getCourse();
 
-                        //テスト用として全ての方向に行けるとし、音声を鳴らしてみる(全部0なので行き止まり)
+                        //テスト用として全ての方向に行けるとし、音声を鳴らしてみる
                         /*for (int i = 0; i < directionNums.length - 1; i++) {
                             directionNums[i] = 1;
                         }*/
