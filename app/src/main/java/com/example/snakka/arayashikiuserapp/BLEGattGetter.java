@@ -58,11 +58,12 @@ public class BLEGattGetter {
             public void onServicesDiscovered(BluetoothGatt gatt, int status) {
                 super.onServicesDiscovered(gatt, status);
 
-                if(status != BluetoothGatt.GATT_SUCCESS) return;
+                if(status != BluetoothGatt.GATT_SUCCESS || bleGatt.getService(UUID.fromString(SENSOR_UUID)) == null) return;
 
                 //サービスを取得->キャクタリスティクスを取得 ==> 読み込み開始(非同期実行)
                 BluetoothGattCharacteristic characteristic
-                        = bleGatt.getService( UUID.fromString(SENSOR_UUID) ).getCharacteristic( UUID.fromString(SENSOR_UUID) );
+                        = bleGatt.getService( UUID.fromString(SENSOR_UUID) )
+                        .getCharacteristic( UUID.fromString(SENSOR_UUID) );
 
                 bleGatt.readCharacteristic(characteristic); //読み込めると、同じクラス内のonCharacteristicReadが呼ばれる。(非同期)
             }
@@ -94,20 +95,28 @@ public class BLEGattGetter {
 
     /** deviceに接続すると同時に、データの取得フラグをoffにする */
     public void connectGatt(Context context, BluetoothDevice device){
-        isGattGot = false;
+        setIsGattGot(false);
         bleGatt = device.connectGatt(context, false, bleGattCallback);
         bleGatt.connect();
     }
 
     public void closeGatt(){
         bleGatt.close();
-        isGattGot = true;
+        setIsGattGot(true);
     }
 
+
+    /** Activityがpouseしたときに呼ぶべき処理 */
+    public void pauseGattGetter(){
+        closeGatt();
+    }
+
+    //getter,setter
 
     public boolean isGattGot(){
         return isGattGot;
     }
+    public void setIsGattGot(boolean gattGot) { isGattGot = gattGot; }
 
     public byte[] getSensorNum(){ return sensorNum; }
 

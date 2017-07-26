@@ -4,23 +4,16 @@ package com.example.snakka.arayashikiuserapp;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.ActivityInfo;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import org.json.JSONObject;
-
 import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,15 +45,14 @@ public class AccountManager{
         if((userName = preferences.getString(USER_NAME_KEY, null)) == null) return false;
         if((guardianMail = preferences.getString(GUARDIAN_MAIL_KEY, null)) == null) return false;
 
-        //return true; //TODO:HACK:テスト実装で常にfalseにしている
-        return false;
+        return true;
     }
 
 
     /** 入力されたユーザー名の論理チェック */
     public boolean isLogicalCheckName(String userName){
         //TODO:userNameに使ってはいけない文字が入っていないか検出。OKならtrue
-        Pattern pattern = Pattern.compile("[ .,]"); //弾くべき文字パターン
+        Pattern pattern = Pattern.compile("[^a-zA-Z0-9_-]"); //これ以外の文字が含まれると弾く
         Matcher matcher = pattern.matcher(userName);
 
         if(matcher.find()){
@@ -104,7 +96,7 @@ public class AccountManager{
 
             @Override
             protected void onPostExecute(Boolean isResCode) {
-                if (isResCode == false) return;
+                if (isResCode == false) return; //TODO:HACK:isResCode.FALSE == falseにしなければいけないのではないか
 
                 loginAccount();
                 accountCreateContext.finish();
@@ -137,7 +129,7 @@ public class AccountManager{
         int resCode = 0;
 
         try {
-            URL url = new URL("http", HOST, PORT, PATH);
+            URL url = new URL(PROTOCOL, HOST, PORT, PATH);
             httpConnector = (HttpURLConnection) url.openConnection();
             httpConnector.setRequestMethod("POST");
             httpConnector.setDoOutput(true);

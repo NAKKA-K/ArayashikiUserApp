@@ -23,11 +23,8 @@ public class AccountCreateActivity extends AppCompatActivity {
     /*createButtonを押された時の動作
      *入力されたデータを解析して問題が無ければ登録後、スタート画面に戻る*/
     public void onCreateButtonClick(View view){
-//TODO:HACK String userName = nameEdit.getText().toString();
-//TODO:HACK String guardianMail = mailEdit.getText().toString();
-        String userName = "tester";
-        String guardianMail = "testeraccount@tester.jp";
-
+        String userName = nameEdit.getText().toString();
+        String guardianMail = mailEdit.getText().toString();
 
         AccountManager accountMgr = new AccountManager(this, userName, guardianMail);
 
