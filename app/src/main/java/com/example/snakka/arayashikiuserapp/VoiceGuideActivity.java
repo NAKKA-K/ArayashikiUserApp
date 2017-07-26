@@ -34,14 +34,6 @@ public class VoiceGuideActivity extends AppCompatActivity{
         }
     }
 
-    //再生し終わったらメモリを解放
-    @Override
-    protected void  onDestroy()
-    {
-        voiceRev.releaseVoice();
-    }
-
-
 }
 
 
