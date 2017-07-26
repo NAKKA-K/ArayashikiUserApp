@@ -2,9 +2,12 @@ package com.example.snakka.arayashikiuserapp;
 
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
@@ -13,12 +16,14 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 
-public class BLEManager extends AsyncTask<Void, Void, Void> {
+public class BLEManager extends AsyncTask<Void, Void, Void> implements OnCancelListener {
     private static Context context;
     private static BluetoothAdapter bleAdapter;
     private static String sensorNumStr;
+    private static ProgressDialog proDialog;
 
     private static final String SENSOR_UUID = "ABCD";
+
 
     //別クラスを内部に保存する
     private static BLEScanner bleScanner;
@@ -60,6 +65,13 @@ public class BLEManager extends AsyncTask<Void, Void, Void> {
     }
 
 
+    @Override
+    protected void onPreExecute(){
+        //Progress Dialog
+        proDialog = new ProgressDialog(context);
+        proDialog.setCancelable(true);
+        proDialog.setOnCancelListener(this);
+    }
 
     @Override
     protected Void doInBackground(Void... params) {
@@ -97,7 +109,22 @@ public class BLEManager extends AsyncTask<Void, Void, Void> {
 
 
         //setSensorList(sensorNumStr);
+
+
+        //TODO:HACK:場合によっては、センサーのスキャン終了時に呼び出す方が良い場合もある
+        this.execute(); //スレッドが終了する直前に、次のスレッドを開始してBLE通信を続ける
     }
+
+
+
+    //ProgressDialogでキャンセルが入力された時に呼ばれる
+    @Override
+    public void onCancel(DialogInterface dialog){
+        bleScanner.pauseScanner();
+        bleGattGetter.pauseGattGetter();
+    }
+
+
 
     /* //こんな感じの奴作ってくれれば、こちらからsetします
     static ArrayList<String> sensorList = new ArrayList<String>();
@@ -120,4 +147,30 @@ public class BLEManager extends AsyncTask<Void, Void, Void> {
 
     public String getSensorNumStr(){ return sensorNumStr; }
     public void setSensorNumStr(String numStr){ sensorNumStr = numStr; }
+
+    public ProgressDialog getProDialog(){ return proDialog; }
 }
+
+/*
+    private static BLEManager bleMgr;
+
+onCreate
+        //BLE通信
+        initBLE();
+onResume
+        //BLE
+        Log.d("onResume", "scan開始だってばよ");
+        bleMgr.execute(); //BLEスキャン開始
+onPause
+        //BLE
+        bleMgr.getProDialog().cancel();
+        Log.d("onPause", "cancelだってばよ");
+
+BLE通信をするために必要な前準備を実装したメソッド
+private void initBLE(){
+    bleMgr = new BLEManager(this);
+
+    bleMgr.onBluetooth(this); //Bluetoothを起動
+}
+
+*/

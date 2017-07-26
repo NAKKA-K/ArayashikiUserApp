@@ -106,6 +106,13 @@ public class BLEGattGetter {
     }
 
 
+    /** Activityがpouseしたときに呼ぶべき処理 */
+    public void pauseGattGetter(){
+        closeGatt();
+    }
+
+    //getter,setter
+
     public boolean isGattGot(){
         return isGattGot;
     }

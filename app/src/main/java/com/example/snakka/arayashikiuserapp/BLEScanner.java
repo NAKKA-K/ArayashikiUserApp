@@ -101,7 +101,7 @@ public class BLEScanner {
         bleLeScanner.startScan(scanCallback);
     }
 
-    /** BLEManagerで作られたインスタンスから呼び出される */
+    /** BLE通信を停止して、スキャン中のフラグを解除する */
     public void stopScanDevice() {
         if(isScanning == false) return;
 
@@ -110,11 +110,17 @@ public class BLEScanner {
     }
 
 
+
+    /** Activityがpouseしたときに呼ぶべき処理 */
+    public void pauseScanner(){
+        stopScanDevice();
+        setSensorDevice(null);
+    }
+
+
     //getter,setter
 
-    public boolean getIsScanning(){
-        return isScanning;
-    }
+    public boolean getIsScanning(){ return isScanning; }
     public void setIsScanning(boolean scanning) { isScanning = scanning; }
 
     public static BluetoothDevice getSensorDevice() { return sensorDevice; }
