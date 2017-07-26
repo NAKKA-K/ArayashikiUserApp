@@ -85,7 +85,7 @@ public class VoiceRevival {
     }
 
     //音声を再生するメソッド
-    public String startVoice() {
+    public void startVoice() {
 
         // 読み込みが終わったかどうか確認ができるクラスをインスタンス化
         soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
@@ -96,12 +96,10 @@ public class VoiceRevival {
             // そのため同じ音声に関しては1度読み込まれれば解放→再度読み込みとしない限り呼ばれることはない(byよーすけさん)
             @Override
             public void onLoadComplete(SoundPool soundPool, int soundId, int status) {
-                // 読み込みが成功している(_Statusが0)なら
-
+                // 読み込みが成功している(statusが0)なら
                 if (status == 0) {
                     // 読み込み成否配列にtrueを入れて添え字をずらす
                     loadSuccessd[loadSuccessIdx++] = true;
-
                     // 無事全部読み込めてたら
                     if (loadSuccessd[0] && loadSuccessd[1] && loadSuccessd[2] && loadSuccessd[3] && loadSuccessd[4]) {
 
@@ -115,7 +113,7 @@ public class VoiceRevival {
                             //「前」に行ける場合
                             if (directionNums[i] == FRONT) {
                                 // 前 右・・・といった感じでスペースを空けながら表示するため空白を格納
-                                viewString += directionTexts[FRONT-1] + " ";
+                                viewString += directionTexts[FRONT-1];
                                 // ここで行ける方向の音声を再生
                                 soundPool.play(voiceIds[FRONT-1], 1.0f, 1.0f, 0, 0, 1);
                                 //音声再生の待ち時間
@@ -126,7 +124,7 @@ public class VoiceRevival {
                             //「右」に行ける場合
                             else if(directionNums[i] == RIGHT) {
                                 // 前 右・・・といった感じでスペースを空けながら表示するため空白を格納
-                                viewString += directionTexts[RIGHT-1] + " ";
+                                viewString += directionTexts[RIGHT-1];
                                 // ここで行ける方向の音声を再生
                                 soundPool.play(voiceIds[RIGHT-1], 1.0f, 1.0f, 0, 0, 1);
                                 //音声再生の待ち時間
@@ -136,7 +134,7 @@ public class VoiceRevival {
                             }
                             //「左」に行ける場合
                             else {
-                                viewString += directionTexts[LEFT-1] + " ";
+                                viewString += directionTexts[LEFT-1] ;
                                 soundPool.play(voiceIds[LEFT-1], 1.0f, 1.0f, 0, 0, 1);
                                 try {
                                     Thread.sleep(700);
@@ -157,6 +155,27 @@ public class VoiceRevival {
             }
         });
         // 文字列を返す
-        return viewString; // なぜか返してくれるのはデフォルトの空白ばかり・・・なので毎回「行き止まりです」が表示されてしまう(現段階)
+//        return viewString; // なぜか返してくれるのはデフォルトの空白ばかり・・・なので毎回「行き止まりです」が表示されてしまう(現段階)
+    }
+    public String viewVoice() {
+
+        for (int i = 0; directionNums[i]!=END; i++) {
+            //「前」に行ける場合
+            if (directionNums[i] == FRONT) {
+                // 前 右・・・といった感じでスペースを空けながら表示するため空白を格納
+                viewString += directionTexts[FRONT-1] + " ";
+            }
+            //「右」に行ける場合
+            else if(directionNums[i] == RIGHT) {
+                // 前 右・・・といった感じでスペースを空けながら表示するため空白を格納
+                viewString += directionTexts[RIGHT-1] + " ";
+            }
+            //「左」に行ける場合
+            else {
+                viewString += directionTexts[LEFT-1] + " ";
+            }
+        }
+
+        return viewString;
     }
 }
