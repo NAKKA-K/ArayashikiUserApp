@@ -6,8 +6,10 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
-import java.util.Random;
-//import static com.example.snakka.arayashikiuserapp.SensorNumber.END;
+import static com.example.snakka.arayashikiuserapp.SensorNumber.END;
+import static com.example.snakka.arayashikiuserapp.SensorNumber.FRONT;
+import static com.example.snakka.arayashikiuserapp.SensorNumber.LEFT;
+import static com.example.snakka.arayashikiuserapp.SensorNumber.RIGHT;
 
 public class VoiceRevival {
     //音声の属性を指定するクラス
@@ -15,7 +17,7 @@ public class VoiceRevival {
     //音声の読み込みや再生を行えるクラス
     private SoundPool soundPool;
     //センサーの方向ナンバーを受け取れるクラス
-    //private SensorNumber senNum;
+    private SensorNumber senNum;
     //音声リソース配列
     private int voiceResources[] =
             {
@@ -96,66 +98,65 @@ public class VoiceRevival {
             public void onLoadComplete(SoundPool soundPool, int soundId, int status) {
                 // 読み込みが成功している(_Statusが0)なら
 
-                if (status == 0)
-                {
+                if (status == 0) {
                     // 読み込み成否配列にtrueを入れて添え字をずらす
                     loadSuccessd[loadSuccessIdx++] = true;
 
                     // 無事全部読み込めてたら
                     if (loadSuccessd[0] && loadSuccessd[1] && loadSuccessd[2] && loadSuccessd[3] && loadSuccessd[4]) {
-                        // ランダムでナンバーを受け取る(テスト用)
-                        directionNumberGet();
 
-                        // 方向ナンバーを受け取る(本番用)
-                        // senNum = new SensorNumber();
-                        // directionNums = senNum.getCourse();
-
-                        //テスト用として全ての方向に行けるとし、音声を鳴らしてみる
-                        /*for (int i = 0; i < directionNums.length - 1; i++) {
-                            directionNums[i] = 1;
-                        }*/
+                        // 方向ナンバーを受け取る
+                         senNum = new SensorNumber();
+                         directionNums = senNum.getCourse();
 
                         // 配列の中身を見てそれぞれに対応する音声を再生
                         // directionTextsが3つの配列なので条件文はlength-1にしておく
-                        for (int i = 0; i < directionNums.length - 1; i++) {
-                            if (directionNums[i] == 1) {
+                        for (int i = 0; directionNums[i]!=END; i++) {
+                            //「前」に行ける場合
+                            if (directionNums[i] == FRONT) {
                                 // 前 右・・・といった感じでスペースを空けながら表示するため空白を格納
-                                viewString += directionTexts[i] + " ";
+                                viewString += directionTexts[FRONT-1] + " ";
                                 // ここで行ける方向の音声を再生
-                                soundPool.play(voiceIds[i], 1.0f, 1.0f, 0, 0, 1);
+                                soundPool.play(voiceIds[FRONT-1], 1.0f, 1.0f, 0, 0, 1);
                                 //音声再生の待ち時間
                                 try {
                                     Thread.sleep(700);
                                 } catch (InterruptedException e) {}
                             }
+                            //「右」に行ける場合
+                            else if(directionNums[i] == RIGHT) {
+                                // 前 右・・・といった感じでスペースを空けながら表示するため空白を格納
+                                viewString += directionTexts[RIGHT-1] + " ";
+                                // ここで行ける方向の音声を再生
+                                soundPool.play(voiceIds[RIGHT-1], 1.0f, 1.0f, 0, 0, 1);
+                                //音声再生の待ち時間
+                                try {
+                                    Thread.sleep(700);
+                                } catch (InterruptedException e) {}
+                            }
+                            //「左」に行ける場合
+                            else {
+                                viewString += directionTexts[LEFT-1] + " ";
+                                soundPool.play(voiceIds[LEFT-1], 1.0f, 1.0f, 0, 0, 1);
+                                try {
+                                    Thread.sleep(700);
+                                } catch (InterruptedException e) {}
+                            }
                         }
-                        // 前、右、左なら
-                        if (directionNums[0] == 1 || directionNums[1] == 1 || directionNums[2] == 1) {
-                            // 「に進めます」の音声を再生
-                            soundPool.play(voiceIds[3], 1.0f, 1.0f, 0, 0, 1);
-                        } else if (directionNums[0] == 0 && directionNums[1] == 0 && directionNums[2] == 0) {
+                        //配列の中身が0なら
+                        if (directionNums[0]==END) {
                             // 「行き止まりです」の音声を再生
                             soundPool.play(voiceIds[4], 1.0f, 1.0f, 0, 0, 1);
+                        }
+                        else {
+                            // 「に進めます」の音声を再生
+                            soundPool.play(voiceIds[3], 1.0f, 1.0f, 0, 0, 1);
                         }
                     }
                 }
             }
         });
-
         // 文字列を返す
         return viewString; // なぜか返してくれるのはデフォルトの空白ばかり・・・なので毎回「行き止まりです」が表示されてしまう(現段階)
-    }
-
-    // ナンバーを受け取るメソッド(テスト用)
-    public void directionNumberGet() {
-        int i = 0;
-        // とりあえず今はランダムに生成した数を方向ナンバーとする(本来はSensorNumberクラス内にあるgetCourseメソッドから受け取る
-        Random rand = new Random();
-        while (i < directionNums.length-1)
-        {
-            directionNums[i] = rand.nextInt(2);
-            if (directionNums[i] == 0 || directionNums[i] == 1)
-                i++; // 0の場合はその方向(前右左のいずれか)に進めなくて1の場合はその方向に進める
-        }
     }
 }
