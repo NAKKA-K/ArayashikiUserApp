@@ -16,7 +16,6 @@ public class BLEScanner {
     private static BluetoothDevice sensorDevice;
     private boolean isScanning = false;
 
-    private boolean isEndScan = false;
     private static String SENSOR_UUID;
 
     public BLEScanner(BluetoothLeScanner bleLeScanner, String uuid){
@@ -44,20 +43,14 @@ public class BLEScanner {
 
                 //TODO:指定のデバイスが見つかったら代入
                 BluetoothDevice device = result.getDevice();
-                if(isSensorDevice(device) == false){
-                    setSensorDevice(device);
+                if(isSensorDevice(device) == false || isEqualDevice(device)) return; //センサーで無いか同じセンサであれば用無し
 
-                    //デバック用
-                    Log.d("ScanDevice address:", device.getAddress());
-                    Log.d("ScanDevice name:", device.getName());
+                setSensorDevice(device);
 
-                    String deviceName = result.getScanRecord().getDeviceName();
-                    Log.i("ScanDevice", deviceName); //取得したデバイスの名前をlogに流す
+                Log.d("ScanDevice name", device.getName());
+                Log.d("ScanDevice getName", result.getScanRecord().getDeviceName()); //取得したデバイスの名前
 
-
-                    setTrueToIsEndScan(); //目的のデバイスのスキャンが終了したことを示すフラグをオンにする
-                }
-
+                stopScanDevice();
             }
 
 
@@ -71,10 +64,6 @@ public class BLEScanner {
     }
 
 
-    /** deviceListにデバイスをセットする */
-    public static void setSensorDevice(BluetoothDevice device){
-        sensorDevice = device;
-    }
 
     /** 保存されているセンサーと検出したセンサーが同じならtrue */
     public boolean isEqualDevice(BluetoothDevice device){
@@ -92,6 +81,8 @@ public class BLEScanner {
 
         //deviceのUUIDの中に、センサーと同じUUIDが存在すればセンサーと判定する
         for(ParcelUuid uuid : uuids){
+            Log.d("uuids", uuid.toString());
+
             if(uuid.toString() == SENSOR_UUID){
                 return true;
             }
@@ -106,8 +97,7 @@ public class BLEScanner {
     public void startScanDevice(){
         if(isScanning == true) return;
 
-        isEndScan = false;
-        isScanning = true;
+        setIsScanning(true);
         bleLeScanner.startScan(scanCallback);
     }
 
@@ -115,17 +105,19 @@ public class BLEScanner {
     public void stopScanDevice() {
         if(isScanning == false) return;
 
-        isScanning = false;
         bleLeScanner.stopScan(scanCallback);
+        setIsScanning(false);
     }
 
 
-    public boolean isScanning(){
+    //getter,setter
+
+    public boolean getIsScanning(){
         return isScanning;
     }
+    public void setIsScanning(boolean scanning) { isScanning = scanning; }
 
     public static BluetoothDevice getSensorDevice() { return sensorDevice; }
+    public static void setSensorDevice(BluetoothDevice device){ sensorDevice = device; }
 
-    public void setTrueToIsEndScan(){ isEndScan = true; }
-    public boolean getIsEndScan(){ return isEndScan; }
 }
