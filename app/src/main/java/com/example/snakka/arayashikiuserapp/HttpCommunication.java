@@ -44,9 +44,7 @@ public class HttpCommunication {
 
     private String trafficLightAddress = "";
     //TODO:信号機の状態今のところ実装なし
-    //private String trafficLightSignal = "false";
-
-    private int responseCode = 0;
+    //private String trafficLightSignal = "false";]
 
 
     //このスレッドの処理が終わるまで、trueにしておく
@@ -63,7 +61,10 @@ public class HttpCommunication {
             protected Boolean doInBackground (Void...params){
                 String resultJson = "";
                 HttpURLConnection getCon = null;
-                currentNum =getSensorList();
+                int resCode = 0;
+
+                if( getSensorList() == null ) return false;
+                currentNum = getSensorList();//センサー情報取得
                 try {
                     URL url = new URL(PROTOCOL, HOST, PORT, FILEPATHGET + currentNum);
                     getCon = (HttpURLConnection) url.openConnection();
@@ -72,7 +73,7 @@ public class HttpCommunication {
                     //getCon.setDoInput(true);
                     getCon.connect();
                     //TODO:ResponseCodeは今の所使ってないので
-                    responseCode = getCon.getResponseCode();
+                    resCode = getCon.getResponseCode();
                     resultJson = jsonStreamToString(getCon.getInputStream());
                     Log.d("http通信", resultJson);
                     jsonanalysis(resultJson);
@@ -87,8 +88,7 @@ public class HttpCommunication {
                 //startFlg = false;
                 Log.d("http通信", "doInBackground終了");
 
-                return new Boolean(isResponseCode(responseCode));
-
+                return new Boolean(isResponseCode(resCode));
             }
 
             /**
@@ -106,11 +106,44 @@ public class HttpCommunication {
                     SensorNumber.setNextWest(numStringToInt(fourWayNumberW));
                 }
                 Log.d("http通信", "終了");
+                asysncTaskToPost();
             }
         }.execute();
     }
 
-    //InputStreamをString型に変換
+    public void asysncTaskToPost() {
+        new AsyncTask<Void, Void, Integer>(){
+            protected Integer doInBackground(Void... param){
+                int resCode;
+
+                if( getSensorList() == null ) return -1;
+                currentNum = getSensorListRemove();
+                resCode = AccountManager.httpDataPost(HOST, PORT, FILEPATHPOST,
+                        getUserJson(currentNum, AccountManager.getUserName()));
+                return new Integer(resCode);
+            }
+
+            protected void onPostExecute (Integer resCode) {
+                boolean isRes;
+                isRes = (isResponseCode(resCode));
+                if(!isRes){
+                    if( resCode == -1 )
+                        Log.d("http通信","ナンバーnull");
+                    else
+                        Log.e("http通信","失敗");
+                }
+                asysncTaskToGet();
+            }
+
+        }.execute();
+    }
+
+    /** ユーザ名とセンサーナンバーから、JSON形式のString型を作成して返す */
+    private String getUserJson(String sensorNo, String userName){
+        return "{\"sensorNo\":\"" + sensorNo + "\", \"userName\":\"" + userName + "\"}";
+    }
+
+    /**InputStreamをString型に変換*/
     private String jsonStreamToString(InputStream stream) throws IOException, UnsupportedEncodingException {
         StringBuffer sb = new StringBuffer();
         BufferedReader br = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
@@ -145,7 +178,7 @@ public class HttpCommunication {
     //レスポンスコードからHTTP通信の成否を判断
     private boolean isResponseCode(int responseCode){
         switch (responseCode){
-            case HTTP_OK:
+            case HttpURLConnection.HTTP_OK:
                 return true;
             default:
                 return false;
@@ -178,13 +211,13 @@ public class HttpCommunication {
     }
 */
 
-    public String getTrafficLightAddress() {
+    /*public String getTrafficLightAddress() {
         return trafficLightAddress;
-    }
+    }*/
 
-    public int getResponseCode(){
+    /*public int getResponseCode(){
         return responseCode;
-    }
+    }*/
     /*public boolean getTrafficLightSignal(){
         return Boolean.parseBoolean(trafficLightSignal);
     }*/
@@ -192,14 +225,21 @@ public class HttpCommunication {
         return startFlg;
     }*/
 
+    /**Getの時は、Listを消さないのでこちらを使います*/
     public static String getSensorList() {
+        if (HttpCommunication.sensorList == null || sensorList.isEmpty()) return null;
+        return sensorList.get(0);
+    }
+    /**Postをする時は、Listを消すのでこちらを使う*/
+    public static String getSensorListRemove() {
+        if (HttpCommunication.sensorList == null || sensorList.isEmpty()) return null;
         String str = sensorList.get(0);
         sensorList.remove(0);
         return str;
     }
 
     public static void setSensorList(String sensorStr) {
-        if (HttpCommunication.sensorList == null ) return;
+        if(sensorList.get(sensorList.size() - 1) == sensorStr) return; //連続して同じセンサーは受け付けない
         HttpCommunication.sensorList.add(sensorStr);
     }
 }
