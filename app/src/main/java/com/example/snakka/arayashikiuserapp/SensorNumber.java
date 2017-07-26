@@ -22,15 +22,15 @@ public class SensorNumber {
 
     private static int[]  drectionNumber = new int[4]; //どの方角に進路があるかを格納：0 無
 
-    private int currentNum; //現在地のNumber
-    private int backNum;    //一つ前に通り過ぎたNumber
+    private static int currentNum; //現在地のNumber
+    private static int backNum;    //一つ前に通り過ぎたNumber
 
     //コンストラクターの宣言（初期化
     /*public SensorNumber(){
         currentNum = 0;
         backNum = 0;
         for(int i = 0 ; i < drectionNumber.length ; i++){
-            drectionNumber[i] = 12;
+            drectionNumber[i] = 0;
         }
     }*/
 
@@ -38,7 +38,7 @@ public class SensorNumber {
     //setNum:センサーから送られる情報をセットする
     /*引数
     num センサーから取得したNumber*/
-    public void setNum(int num){
+    public static void setNum(int num){
         backNum = currentNum;
         currentNum = num;
 

@@ -1,6 +1,7 @@
 package com.example.snakka.arayashikiuserapp;
 
 import android.os.AsyncTask;
+import android.os.storage.StorageManager;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -13,27 +14,32 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * Created by morikei on 2017/07/03.
  */
 
 public class HttpCommunication {
+
+    public static ArrayList<String> sensorList = new ArrayList<String>();
+
     private static final String PROTOCOL = "http";
     private static final String HOST = "59.106.210.231";
     private static final int PORT = 3000;
-    private static final String FILEPATH = "/mana/";
-    private static final String NONULL = "0";
+    private static final String FILEPATHGET = "/mana/";
+    private static final String FILEPATHPOST = "/mana/route";
+    private static final int NUMNULL = 0;
     private static final int HTTP_OK = 200;
     private static final int HTTP_ERR = 400;
 
-    private String currentNum;
 
     private String block = "false";
+    private String currentNum = "null";
     private String fourWayNumberN = "null";
     private String fourWayNumberS = "null";
     private String fourWayNumberW = "null";
-    private String fourWayNumberE = "32";
+    private String fourWayNumberE = "null";
 
 
     private String trafficLightAddress = "";
@@ -46,27 +52,20 @@ public class HttpCommunication {
     //このスレッドの処理が終わるまで、trueにしておく
     //private boolean startFlg = false;
 
-    public HttpCommunication(String currentNum){
+    /*public HttpCommunication(String currentNum){
         this.currentNum = currentNum;
-    }
+    }*/
 
 
     public void asysncTaskToGet() {
         new AsyncTask<Void, Void, Boolean>(){
-            //TODO:doInBackground前処理、今のところ必要ない
-            /*@Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                Log.d("http通信","log1");
-                // doInBackground前処理
-            }*/
-            //非同期処理、HTTP通信とjsonのパースを行う
             @Override
             protected Boolean doInBackground (Void...params){
                 String resultJson = "";
                 HttpURLConnection getCon = null;
+                currentNum =getSensorList();
                 try {
-                    URL url = new URL(PROTOCOL, HOST, PORT, FILEPATH + currentNum);
+                    URL url = new URL(PROTOCOL, HOST, PORT, FILEPATHGET + currentNum);
                     getCon = (HttpURLConnection) url.openConnection();
                     //TODO：初期値で設定されているから必要ない？
                     //getCon.setRequestMethod("GET");
@@ -100,11 +99,11 @@ public class HttpCommunication {
             @Override
             protected void onPostExecute (Boolean isRes) {
                 if(isRes) {
-                    SensorNumber sn = new SensorNumber();
-                    sn.setNextNorth(getFourWayNumberN());
-                    sn.setNextEast(getFourWayNumberE());
-                    sn.setNextSouth(getFourWayNumberS());
-                    sn.setNextWest(getFourWayNumberW());
+                    SensorNumber.setNum(numStringToInt(currentNum));
+                    SensorNumber.setNextNorth(numStringToInt(fourWayNumberN));
+                    SensorNumber.setNextEast(numStringToInt(fourWayNumberE));
+                    SensorNumber.setNextSouth(numStringToInt(fourWayNumberS));
+                    SensorNumber.setNextWest(numStringToInt(fourWayNumberW));
                 }
                 Log.d("http通信", "終了");
             }
@@ -153,30 +152,31 @@ public class HttpCommunication {
         }
     }
 
+    private int numStringToInt(String num){
+        return num == "null" ? NUMNULL : Integer.parseInt(num);
+    }
+
     public boolean getBlock() {
         return Boolean.parseBoolean(block);
     }
 
+/*TODO:getメゾットは今は使わない
     public int getFourWayNumberN() {
-
-        fourWayNumberN = fourWayNumberN == "null" ?  NONULL : fourWayNumberN;
-        return Integer.parseInt(fourWayNumberN);
+        return fourWayNumberN == "null" ?  NUMNULL : Integer.parseInt(fourWayNumberN);
     }
 
     public int getFourWayNumberS() {
-        fourWayNumberS = fourWayNumberS == "null" ? NONULL : fourWayNumberS;
-        return Integer.parseInt(fourWayNumberS);
+        return fourWayNumberS == "null" ? NUMNULL : Integer.parseInt(fourWayNumberS);
     }
 
     public int getFourWayNumberW() {
-        fourWayNumberW = fourWayNumberW == "null" ? NONULL : fourWayNumberW;
-        return Integer.parseInt(fourWayNumberW);
+        return fourWayNumberW == "null" ? NUMNULL : Integer.parseInt(fourWayNumberW);
     }
 
     public int getFourWayNumberE() {
-        fourWayNumberE = fourWayNumberE == "null" ? NONULL : fourWayNumberE;
-        return Integer.parseInt(fourWayNumberE);
+        return fourWayNumberE == "null" ? NUMNULL : Integer.parseInt(fourWayNumberE);
     }
+*/
 
     public String getTrafficLightAddress() {
         return trafficLightAddress;
@@ -191,5 +191,16 @@ public class HttpCommunication {
     /*public boolean isStartFlg(){
         return startFlg;
     }*/
+
+    public static String getSensorList() {
+        String str = sensorList.get(0);
+        sensorList.remove(0);
+        return str;
+    }
+
+    public static void setSensorList(String sensorStr) {
+        if (HttpCommunication.sensorList == null ) return;
+        HttpCommunication.sensorList.add(sensorStr);
+    }
 }
 
