@@ -110,12 +110,12 @@ public class VoiceRevival {
             @Override
             public void onLoadComplete(SoundPool soundPool, int soundId, int status) {
                 // 読み込みが成功している(statusが0)なら
-                //startVoiceメソッド内に同期処理を記述
                 if (status == 0) {
                     loadSuccessd[loadSuccessIdx++] = true;
                     // 無事全部読み込めてたら
                     if (loadSuccessd[0] && loadSuccessd[1] && loadSuccessd[2] && loadSuccessd[3] && loadSuccessd[4]) {
-                        //音声再生
+                        //音声再生をする
+                        //startVoiceメソッド内に同期処理を記述
                         startVoice();
                     }
                 }
@@ -131,7 +131,7 @@ public class VoiceRevival {
         });
     }
 
-    //音声を再生するメソッド(非同期処理はVoiceGuideActivity内で行われる)
+    //音声を再生するメソッド(非同期処理はmainVoiceメソッド内で行われる)
     public void startVoice() {
         // 配列の中身を見てそれぞれに対応する音声を再生
         // directionTextsが3つの配列なので条件文はlength-1にしておく
@@ -199,5 +199,4 @@ public class VoiceRevival {
         }
         return viewString;
     }
-
 }
