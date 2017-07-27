@@ -55,7 +55,7 @@ public class VoiceRevival {
             };
     // 読み込みが成功する度に1ずつ加算していく値
     // 読み込みが完了しているかどうかをチェックする関数内で
-    // 上記の読み込み成否を格納する配列の添え字に使用する
+    // 読み込み成否を格納する配列の添え字に使用する
     private int loadSuccessIdx = 0;
     // TextViewに表示する文字列を格納変数(後に戻り値となる)
     public String viewString = "";
