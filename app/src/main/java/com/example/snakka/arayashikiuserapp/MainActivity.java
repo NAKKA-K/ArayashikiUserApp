@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
 
 
-            bleMgr.onBluetooth(this); //Bluetoothを起動
+//            bleMgr.onBluetooth(this); //Bluetoothを起動
             return;
         }
 
