@@ -177,6 +177,8 @@ public class VoiceRevival {
     //行ける方向の文字列を返すメソッド(同期処理)
     public String viewVoice()
     {
+        //文字列の初期化
+        viewString="";
         // 方向ナンバーを受け取る
         senNum = new SensorNumber();
         directionNums = senNum.getCourse();
