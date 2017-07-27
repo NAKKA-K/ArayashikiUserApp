@@ -20,7 +20,7 @@ public class VoiceGuideActivity extends AppCompatActivity{
         reVoice = (Button)findViewById(R.id.button);
         //再生機構の初期化
         voiceRev = new VoiceRevival(getApplicationContext());
-       //音声再生、文字表示
+       //行ける方向の音声再生、文字表示、もう一度再生可能(全てを司る！！！)
         voiceRev.mainVoice();
 
     }
