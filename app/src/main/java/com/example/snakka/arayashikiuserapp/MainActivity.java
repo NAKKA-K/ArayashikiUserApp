@@ -13,10 +13,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-       /* bleMgr = new BLEManager(this);
+        bleMgr = new BLEManager(this);
         if(bleMgr.isBleSupport() == false){
             this.finishAndRemoveTask();
-        }*/
+        }
 
     }
 
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
 
 
-//            bleMgr.onBluetooth(this); //Bluetoothを起動
+            bleMgr.onBluetooth(this); //Bluetoothを起動
             return;
         }
 
