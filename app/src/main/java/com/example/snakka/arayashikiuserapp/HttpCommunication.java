@@ -120,7 +120,7 @@ public class HttpCommunication {
                 int resCode;
 
                 if( getSensorList() == null ) return -1;
-                currentNum = getSensorListRemove();
+                currentNum = getSensorList();
                 resCode = AccountManager.httpDataPost(HOST, PORT, FILEPATHPOST,
                         getUserJson(currentNum, AccountManager.getUserName()));
                 return new Integer(resCode);
@@ -129,11 +129,16 @@ public class HttpCommunication {
             protected void onPostExecute (Integer resCode) {
                 boolean isRes;
                 isRes = (isResponseCode(resCode));
-                if(!isRes){
-                    if( resCode == -1 )
-                        Log.d("http通信","ナンバーnull");
-                    else
-                        Log.e("http通信","失敗");
+                if(!isRes){//POSTができなかった場合
+                    if( resCode == -1 ) {
+                        Log.d("http通信", "ナンバーnull");
+                    }
+                    else {
+                        Log.e("http通信", "失敗");
+                    }
+                }else{//POST成功したとき
+                    Log.d("http通信","POST成功");
+                    sensorList.remove(0);
                 }
                 //ここでまた、
                 asyncTaskToGet();
@@ -235,12 +240,13 @@ public class HttpCommunication {
         return sensorList.get(0);
     }
     /**Postをする時は、Listを消すのでこちらを使う*/
-    public static String getSensorListRemove() {
+/*    public static String getSensorListRemove() {
         if (HttpCommunication.sensorList == null || sensorList.isEmpty()) return null;
         String str = sensorList.get(0);
-        sensorList.remove(0);
+        //sensorList.remove(0);
         return str;
     }
+*/
 
     public static void setSensorList(String sensorStr) {
         if(sensorList.get(sensorList.size() - 1) == sensorStr) return; //連続して同じセンサーは受け付けない
