@@ -59,40 +59,42 @@ public class BLEManager extends AsyncTask<Void, Void, Void> {
     }
 
 
-    /** BLEManagerを再生成して、処理開始 */
-    public void startBLE(){
-        new BLEManager().execute();
-    }
 
 
     @Override
     protected Void doInBackground(Void... params) {
+        //TODO:HACK:AsyncTaskで長時間のループは避けるべきとのこと
+        while(isCancelled() == false){
+            sensorNumGetter();
 
-        sensorNumGetter();
-
-        setSensorPost();
+            setSensorPost();
+        }
 
         return null;
     }
 
     /** センサをスキャン、データの取得をしてそれぞれのクラスの内部に保存しておく */
     public void sensorNumGetter(){
-        //HACK:非常にひどい一時的な実装
-        bleScanner.startScanDevice(); //HACK:このままでは永遠にスキャンし続ける
-
         //TODO:HACK:仕様として同期処理があればそちらに変更する
-        while(bleScanner.getIsScanning()){} //センサーがスキャンできればスキャンが停止して、isScanningがfalseに代わる
+
+        bleScanner.startScanDevice();
+
+        //センサーがスキャンできればスキャンが停止して、isScanningがfalseに代わる
+        while(bleScanner.getIsScanning()){
+            if(isCancelled()) return;
+        }
 
 
         bleGattGetter.connectGatt(context, bleScanner.getSensorDevice()); //切断は自動でしてくれる
 
         //センサ番号の取得待ち
-        while(bleGattGetter.isGattGot() == false){} //未取得の場合
+        while(bleGattGetter.isGattGot() == false){
+            if(isCancelled()) return;
+        }
     }
 
 
     public void setSensorPost(){
-        //TODO:センサ番号が取得できたので、Byte[]をStringに変換してしかるべき場所にsetする
         try {
             sensorNumStr = new String(bleGattGetter.getSensorNum(), "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -100,9 +102,9 @@ public class BLEManager extends AsyncTask<Void, Void, Void> {
         }
 
         Log.e("onPostExecute()", "センサー番号 = " + sensorNumStr);
-        Toast.makeText(context, "センサー番号 = " + sensorNumStr, Toast.LENGTH_LONG).show();
+        //Toast.makeText(context, "センサー番号 = " + sensorNumStr, Toast.LENGTH_LONG).show();
 
-        //HttpCommunication.setSensorList(sensorNumStr);
+        HttpCommunication.setSensorList(sensorNumStr);
     }
 
 
