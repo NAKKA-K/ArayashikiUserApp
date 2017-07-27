@@ -19,33 +19,20 @@ public class BLEGattGetter {
     private boolean isGattGot = false;
     private byte[] sensorNum;
 
-    private static String SENSOR_UUID;
 
-
-    public BLEGattGetter(String uuid){
-        this.SENSOR_UUID = uuid;
-
+    public BLEGattGetter(){
         bleGattCallback = initGattCallback();
     }
 
-
     private BluetoothGattCallback initGattCallback(){
         return new BluetoothGattCallback() {
-            /**
-             * GATTクライアントがリモートGATTサーバに接続、切断されたことを示すコールバック。
-             *
-             * @param gatt     GATTクライアント
-             * @param status   接続、切断操作のステータス
-             *                 {BluetoothGatt#GATT_SUCCESS}成功すると返されます
-             * @param newState 新しい接続状態を返します。以下のどちらかになります。
-             *                 {BluetoothProfile#STATE_DISCONNECTED}
-             *                 {BluetoothProfile#STATE_CONNECTED}
-             */
+            /** GATTクライアントがリモートGATTサーバに接続、切断されたことを示すコールバック。 */
             @Override
             public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
                 super.onConnectionStateChange(gatt, status, newState);
 
                 if (newState == BluetoothProfile.STATE_DISCONNECTED){
+                    Log.d("discoverServices()", "GATTをclose()します");
                     gatt.close();
                     return;
                 }
@@ -53,7 +40,6 @@ public class BLEGattGetter {
                 Log.e("discoverServices()", "GATTに接続");
                 bleGatt.discoverServices();
             }
-
 
             @Override
             public void onServicesDiscovered(BluetoothGatt gatt, int status) {
@@ -69,8 +55,6 @@ public class BLEGattGetter {
                 }
             }
 
-
-
             @Override
             public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
                 super.onCharacteristicRead(gatt, characteristic, status);
@@ -78,6 +62,7 @@ public class BLEGattGetter {
                 if(status != BluetoothGatt.GATT_SUCCESS) return;
 
                 sensorNum = characteristic.getValue();
+                Log.d("onCharacteristicRead()", "sensorNum = " + sensorNum);
 
                 closeGatt();
             }
@@ -119,8 +104,8 @@ public class BLEGattGetter {
         closeGatt();
     }
 
-    //getter,setter
 
+    //getter,setter
     public boolean isGattGot(){
         return isGattGot;
     }
