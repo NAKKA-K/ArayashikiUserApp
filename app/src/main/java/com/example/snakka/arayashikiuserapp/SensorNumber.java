@@ -1,5 +1,6 @@
 package com.example.snakka.arayashikiuserapp;
 
+
 /**
  * Created by morikei on 2017/05/24.
  * ユーザー側のナンバー操作クラス
@@ -19,10 +20,10 @@ public class SensorNumber {
     private static final int SOUTH = 2;
     private static final int WEST = 3;
 
-    private int[]  drectionNumber = new int[4]; //どの方角に進路があるかを格納：0 無
+    private static int[]  drectionNumber = new int[4]; //どの方角に進路があるかを格納：0 無
 
-    private int currentNum; //現在地のNumber
-    private int backNum;    //一つ前に通り過ぎたNumber
+    private static int currentNum; //現在地のNumber
+    private static int backNum;    //一つ前に通り過ぎたNumber
 
     //コンストラクターの宣言（初期化
     public SensorNumber(){
@@ -37,7 +38,7 @@ public class SensorNumber {
     //setNum:センサーから送られる情報をセットする
     /*引数
     num センサーから取得したNumber*/
-    public void setNum(int num){
+    public static void setNum(int num){
         backNum = currentNum;
         currentNum = num;
 
@@ -47,19 +48,19 @@ public class SensorNumber {
     /*引数
     next[方角] 方角事のNumber センサーが無ければ：0 有れば：各Number
      */
-    public void setNextNorth(int nextNorth) {
+    public static void setNextNorth(int nextNorth) {
         drectionNumber[NORTH] = nextNorth;
     }
 
-    public void setNextEast(int nextEast) {
+    public static void setNextEast(int nextEast) {
         drectionNumber[EAST] = nextEast;
     }
 
-    public void setNextSouth(int nextSouth) {
+    public static void setNextSouth(int nextSouth) {
         drectionNumber[SOUTH] = nextSouth;
     }
 
-    public void setNextWest(int nextWest) {
+    public static void setNextWest(int nextWest) {
         drectionNumber[WEST] = nextWest;
     }
 
@@ -73,19 +74,19 @@ public class SensorNumber {
     }
 
     //GetNext:進路の先にあるNumberを取得する
-    public int getNextNorth() {
+    public static int getNextNorth() {
         return drectionNumber[NORTH];
     }
 
-    public int getNextSouth() {
+    public static int getNextSouth() {
         return drectionNumber[SOUTH];
     }
 
-    public int getNextWest() {
+    public static int getNextWest() {
         return drectionNumber[WEST];
     }
 
-    public int getNextEast() {
+    public static int getNextEast() {
         return drectionNumber[EAST];
     }
 
