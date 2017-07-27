@@ -23,8 +23,7 @@ public class VoiceGuideActivity extends AppCompatActivity{
         reVoice = (Button)findViewById(R.id.button);
         //再生機構の初期化
         voiceRev = new VoiceRevival(getApplicationContext());
-       //行ける方向の音声再生、文字表示、もう一度再生可能(全てを司る！！！)
-        voiceRev.mainVoice();
+
 
         //BEL
         //initBLE();
@@ -35,6 +34,13 @@ public class VoiceGuideActivity extends AppCompatActivity{
         bleMgr = new BLEManager(this);
 
         bleMgr.onBluetooth(this); //Bluetoothを起動
+    }
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+        //行ける方向の音声再生、文字表示、もう一度再生可能(全てを司る！！！)
+        voiceRev.mainVoice();
     }
 
     @Override
