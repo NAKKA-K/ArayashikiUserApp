@@ -16,10 +16,8 @@ public class VoiceGuideActivity extends AppCompatActivity{
         textView1 = (TextView) findViewById(R.id.textView1);
         textView2 = (TextView) findViewById(R.id.textView2);
 
-        // VoiceRevivalActivityクラスをインスタンス化
-        // 再生機構の初期化
         voiceRev = new VoiceRevival();
-        //音声再生するための初期化
+        //再生機構の初期化
         voiceRev.initVoice(getApplicationContext());
         // 音声再生あんど行ける方向の文字列を返す
         String viewString=voiceRev.startVoice();
