@@ -31,8 +31,8 @@ public class VoiceRevival {
     private String[] directionTexts =
             {
                     "前",
-                    "左",
-                    "右"
+                    "右",
+                    "左"
             };
 
     //directionNumberGetメソッドから方向ナンバーを受け取るためのフィールド
@@ -57,7 +57,7 @@ public class VoiceRevival {
 
     // 初期化
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public VoiceRevival(Context context){
+    public VoiceRevival(Context context) {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
@@ -78,14 +78,13 @@ public class VoiceRevival {
                     .setMaxStreams(1)
                     .build();
         }
-
         //音声をロード
         for (int i = 0; i < voiceResources.length; i++)
             voiceIds[i] = soundPool.load(context,voiceResources[i], 1);
     }
 
     //音声を再生するメソッド
-    public void startVoice() {
+    public String startVoice() {
 
         // 読み込みが終わったかどうか確認ができるクラスをインスタンス化
         soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
@@ -103,17 +102,11 @@ public class VoiceRevival {
                     // 無事全部読み込めてたら
                     if (loadSuccessd[0] && loadSuccessd[1] && loadSuccessd[2] && loadSuccessd[3] && loadSuccessd[4]) {
 
-                        // 方向ナンバーを受け取る
-                         senNum = new SensorNumber();
-                         directionNums = senNum.getCourse();
-
                         // 配列の中身を見てそれぞれに対応する音声を再生
                         // directionTextsが3つの配列なので条件文はlength-1にしておく
                         for (int i = 0; directionNums[i]!=END; i++) {
                             //「前」に行ける場合
                             if (directionNums[i] == FRONT) {
-                                // 前 右・・・といった感じでスペースを空けながら表示するため空白を格納
-                                viewString += directionTexts[FRONT-1];
                                 // ここで行ける方向の音声を再生
                                 soundPool.play(voiceIds[FRONT-1], 1.0f, 1.0f, 0, 0, 1);
                                 //音声再生の待ち時間
@@ -123,24 +116,20 @@ public class VoiceRevival {
                             }
                             //「右」に行ける場合
                             else if(directionNums[i] == RIGHT) {
-                                // 前 右・・・といった感じでスペースを空けながら表示するため空白を格納
-                                viewString += directionTexts[RIGHT-1];
-                                // ここで行ける方向の音声を再生
                                 soundPool.play(voiceIds[RIGHT-1], 1.0f, 1.0f, 0, 0, 1);
-                                //音声再生の待ち時間
                                 try {
                                     Thread.sleep(700);
                                 } catch (InterruptedException e) {}
                             }
                             //「左」に行ける場合
                             else {
-                                viewString += directionTexts[LEFT-1] ;
                                 soundPool.play(voiceIds[LEFT-1], 1.0f, 1.0f, 0, 0, 1);
                                 try {
                                     Thread.sleep(700);
                                 } catch (InterruptedException e) {}
                             }
                         }
+
                         //配列の中身が0なら
                         if (directionNums[0]==END) {
                             // 「行き止まりです」の音声を再生
@@ -154,11 +143,12 @@ public class VoiceRevival {
                 }
             }
         });
-        // 文字列を返す
-//        return viewString; // なぜか返してくれるのはデフォルトの空白ばかり・・・なので毎回「行き止まりです」が表示されてしまう(現段階)
-    }
-    public String viewVoice() {
 
+        // 方向ナンバーを受け取る
+        senNum = new SensorNumber();
+        directionNums = senNum.getCourse();
+
+        //先に同期処理を終わらせるために文字列を返す
         for (int i = 0; directionNums[i]!=END; i++) {
             //「前」に行ける場合
             if (directionNums[i] == FRONT) {
@@ -167,7 +157,6 @@ public class VoiceRevival {
             }
             //「右」に行ける場合
             else if(directionNums[i] == RIGHT) {
-                // 前 右・・・といった感じでスペースを空けながら表示するため空白を格納
                 viewString += directionTexts[RIGHT-1] + " ";
             }
             //「左」に行ける場合
@@ -175,7 +164,7 @@ public class VoiceRevival {
                 viewString += directionTexts[LEFT-1] + " ";
             }
         }
-
         return viewString;
     }
+
 }

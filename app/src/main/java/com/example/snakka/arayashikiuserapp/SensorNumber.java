@@ -29,9 +29,8 @@ public class SensorNumber {
         currentNum = 0;
         backNum = 0;
         for(int i = 0 ; i < drectionNumber.length ; i++){
-            drectionNumber[i] = 1;
+            drectionNumber[i] = 0;
         }
-            drectionNumber[3] = 0;
     }
 
 
