@@ -9,4 +9,5 @@
     <string name="voice_guide_title_text">音声案内画面</string>
     <string name="voice_scene">音声再生画面</string>
     <string name="def">"  "</string>
+    <string name="view_button">もう一度再生</string>
 </resources>
