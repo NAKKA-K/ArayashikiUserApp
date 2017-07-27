@@ -18,17 +18,16 @@ public class VoiceGuideActivity extends AppCompatActivity{
 
         // VoiceRevivalActivityクラスをインスタンス化
         // 再生機構の初期化
-        voiceRev = new VoiceRevival(getApplicationContext());
+        voiceRev = new VoiceRevival();
         // 音声再生あんど行ける方向の文字列を返す
+        voiceRev.initVoice(getApplicationContext());
         String viewString=voiceRev.startVoice();
 
         // 返ってきたviewStringの中身が空のままだったら行き止まりと判定
-        if(viewString.isEmpty())
-        {
+        if(viewString.isEmpty()) {
             textView2.setText("行き止まりです");
         }
-        else
-        {
+        else {
             textView1.setText(viewString);
             textView2.setText("に進めます");
         }

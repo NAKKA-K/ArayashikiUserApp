@@ -57,7 +57,7 @@ public class VoiceRevival {
 
     // 初期化
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public VoiceRevival(Context context) {
+    public void initVoice(Context context) {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
@@ -78,9 +78,11 @@ public class VoiceRevival {
                     .setMaxStreams(1)
                     .build();
         }
+
         //音声をロード
         for (int i = 0; i < voiceResources.length; i++)
-            voiceIds[i] = soundPool.load(context,voiceResources[i], 1);
+            voiceIds[i] = soundPool.load(context, voiceResources[i], 1);
+
     }
 
     //音声を再生するメソッド
