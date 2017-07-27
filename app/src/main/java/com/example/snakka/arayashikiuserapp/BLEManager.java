@@ -16,25 +16,19 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 
-public class BLEManager extends AsyncTask<Void, Void, Void> implements OnCancelListener {
+public class BLEManager extends AsyncTask<Void, Void, Void> {
     private static Context context;
     private static BluetoothAdapter bleAdapter;
-    private static String sensorNumStr;
-    private static ProgressDialog proDialog;
-
-    private static final String SENSOR_UUID = "ABCD";
-
+    private String sensorNumStr;
 
     //別クラスを内部に保存する
-    private static BLEScanner bleScanner;
-    private static BLEGattGetter bleGattGetter;
+    private static BLEScanner bleScanner = null;
+    private static BLEGattGetter bleGattGetter = null;
 
 
-    public BLEManager(Context context){
-        this.context = context;
-
-        bleScanner = new BLEScanner(bleAdapter.getBluetoothLeScanner(), SENSOR_UUID);
-        bleGattGetter = new BLEGattGetter(SENSOR_UUID);
+    public BLEManager(){
+        if(bleScanner != null) bleScanner = new BLEScanner(bleAdapter.getBluetoothLeScanner());
+        if(bleGattGetter != null) bleGattGetter = new BLEGattGetter();
     }
 
 
@@ -61,20 +55,22 @@ public class BLEManager extends AsyncTask<Void, Void, Void> implements OnCancelL
         if(bleAdapter.isEnabled() == false){
             bleAdapter.enable(); //強制的にBluetoothを起動する
         }
+        this.context = activity;
     }
 
 
-    @Override
-    protected void onPreExecute(){
-        //Progress Dialog
-        proDialog = new ProgressDialog(context);
-        proDialog.setCancelable(true);
-        proDialog.setOnCancelListener(this);
+    /** BLEManagerを再生成して、処理開始 */
+    public void startBLE(){
+        new BLEManager().execute();
     }
+
 
     @Override
     protected Void doInBackground(Void... params) {
+
         sensorNumGetter();
+
+        setSensorPost();
 
         return null;
     }
@@ -95,8 +91,7 @@ public class BLEManager extends AsyncTask<Void, Void, Void> implements OnCancelL
     }
 
 
-    @Override
-    protected void onPostExecute(Void params){
+    public void setSensorPost(){
         //TODO:センサ番号が取得できたので、Byte[]をStringに変換してしかるべき場所にsetする
         try {
             sensorNumStr = new String(bleGattGetter.getSensorNum(), "UTF-8");
@@ -104,28 +99,24 @@ public class BLEManager extends AsyncTask<Void, Void, Void> implements OnCancelL
             e.printStackTrace();
         }
 
-        Log.d("sensorNumStr:", sensorNumStr);
-
+        Log.e("onPostExecute()", "センサー番号 = " + sensorNumStr);
+        Toast.makeText(context, "センサー番号 = " + sensorNumStr, Toast.LENGTH_LONG).show();
 
         //HttpCommunication.setSensorList(sensorNumStr);
-
-        //TODO:HACK:場合によっては、センサーのスキャン終了時に呼び出す方が良い場合もある
-        this.execute(); //スレッドが終了する直前に、次のスレッドを開始してBLE通信を続ける
     }
 
 
-
-    //ProgressDialogでキャンセルが入力された時に呼ばれる
     @Override
-    public void onCancel(DialogInterface dialog){
-        bleScanner.pauseScanner();
-        bleGattGetter.pauseGattGetter();
+    protected void onCancelled(){
+        bleScanner.cancelScanner();
+        bleGattGetter.cancelGattGetter();
     }
 
 
     public String getSensorNumStr(){ return sensorNumStr; }
     public void setSensorNumStr(String numStr){ sensorNumStr = numStr; }
 
-    public ProgressDialog getProDialog(){ return proDialog; }
+    public static Context getGuideContext(){ return context; }
+    public static void setContext(Context context){ BLEManager.context = context; }
 }
 
