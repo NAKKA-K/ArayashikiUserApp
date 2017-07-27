@@ -54,8 +54,10 @@ public class HttpCommunication {
         this.currentNum = currentNum;
     }*/
 
-
-    public void asysncTaskToGet() {
+    /**
+     * asyncTaskToGet()を始めると、自動的にasyncTaskToPost()を始める
+     */
+    public void asyncTaskToGet() {
         new AsyncTask<Void, Void, Boolean>(){
             @Override
             protected Boolean doInBackground (Void...params){
@@ -106,12 +108,13 @@ public class HttpCommunication {
                     SensorNumber.setNextWest(numStringToInt(fourWayNumberW));
                 }
                 Log.d("http通信", "終了");
-                asysncTaskToPost();
+                //ここでPOSTをします
+                asyncTaskToPost();
             }
         }.execute();
     }
 
-    public void asysncTaskToPost() {
+    private void asyncTaskToPost() {
         new AsyncTask<Void, Void, Integer>(){
             protected Integer doInBackground(Void... param){
                 int resCode;
@@ -132,7 +135,8 @@ public class HttpCommunication {
                     else
                         Log.e("http通信","失敗");
                 }
-                asysncTaskToGet();
+                //ここでまた、
+                asyncTaskToGet();
             }
 
         }.execute();
