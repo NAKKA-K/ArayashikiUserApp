@@ -26,13 +26,13 @@ public class SensorNumber {
     private static int backNum;    //一つ前に通り過ぎたNumber
 
     //コンストラクターの宣言（初期化
-    /*public SensorNumber(){
+    public SensorNumber(){
         currentNum = 0;
         backNum = 0;
         for(int i = 0 ; i < drectionNumber.length ; i++){
             drectionNumber[i] = 0;
         }
-    }*/
+    }
 
 
     //setNum:センサーから送られる情報をセットする
