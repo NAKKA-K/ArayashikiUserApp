@@ -134,7 +134,6 @@ public class VoiceRevival {
     //音声を再生するメソッド(非同期処理はmainVoiceメソッド内で行われる)
     public void startVoice() {
         // 配列の中身を見てそれぞれに対応する音声を再生
-        // directionTextsが3つの配列なので条件文はlength-1にしておく
         for (int i = 0; directionNums[i]!=END; i++) {
             //「前」に行ける場合
             if (directionNums[i] == FRONT) {
