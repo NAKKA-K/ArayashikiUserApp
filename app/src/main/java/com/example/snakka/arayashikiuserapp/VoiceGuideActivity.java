@@ -24,38 +24,32 @@ public class VoiceGuideActivity extends AppCompatActivity{
         //再生機構の初期化
         voiceRev = new VoiceRevival(getApplicationContext());
 
-
-        //BEL
-        //initBLE();
     }
 
-    /** BLE通信をするために必要な前準備を実装したメソッド */
-    private void initBLE(){
-        bleMgr = new BLEManager(this);
-
-        bleMgr.onBluetooth(this); //Bluetoothを起動
-    }
 
     @Override
     protected void onStart(){
         super.onStart();
         //行ける方向の音声再生、文字表示、もう一度再生可能(全てを司る！！！)
         voiceRev.mainVoice();
-    }
 
-    @Override
-    protected void onResume(){
-        super.onResume();
-        Log.d("onResume", "scan開始だってばよ");
-        //bleMgr.execute(); //BLEスキャン開始
+
+        initBLE();
+        bleMgr.execute();
     }
 
 
     @Override
-    protected void onPause(){
-        super.onPause();
-        //bleMgr.getProDialog().cancel();
-        Log.d("onPause", "cancelだってばよ");
+    protected void onStop(){
+        bleMgr.cancel(true);
+    }
+
+
+    /** BLE通信をするために必要な前準備を実装したメソッド */
+    private void initBLE(){
+        bleMgr = new BLEManager();
+
+        bleMgr.onBluetooth(this); //Bluetoothを起動
     }
 
 }
