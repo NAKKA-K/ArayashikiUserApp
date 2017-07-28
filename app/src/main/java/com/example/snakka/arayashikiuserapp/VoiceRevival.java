@@ -55,7 +55,7 @@ public class VoiceRevival {
             };
     // 読み込みが成功する度に1ずつ加算していく値
     // 読み込みが完了しているかどうかをチェックする関数内で
-    // 上記の読み込み成否を格納する配列の添え字に使用する
+    // 読み込み成否を格納する配列の添え字に使用する
     private int loadSuccessIdx = 0;
     // TextViewに表示する文字列を格納変数(後に戻り値となる)
     public String viewString = "";
@@ -134,7 +134,6 @@ public class VoiceRevival {
     //音声を再生するメソッド(非同期処理はmainVoiceメソッド内で行われる)
     public void startVoice() {
         // 配列の中身を見てそれぞれに対応する音声を再生
-        // directionTextsが3つの配列なので条件文はlength-1にしておく
         for (int i = 0; directionNums[i]!=END; i++) {
             //「前」に行ける場合
             if (directionNums[i] == FRONT) {
@@ -177,6 +176,8 @@ public class VoiceRevival {
     //行ける方向の文字列を返すメソッド(同期処理)
     public String viewVoice()
     {
+        //文字列の初期化
+        viewString="";
         // 方向ナンバーを受け取る
         senNum = new SensorNumber();
         directionNums = senNum.getCourse();
