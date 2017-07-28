@@ -23,13 +23,12 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    //TODO:テスト実装
     /*startButtonを押したときの動作
      *1度アカウント登録していた場合は音声案内画面に。
      *始めてアプリを起動したときはアカウント登録画面に飛ぶ。*/
     public void onStartButtonClick(View view){
-        //TODO:テスト実装。現在の作業はすべて音声案内画面で行われるはずなため、常にtrueになるように設定
-        if(AccountManager.loginedAccount(view.getContext()) == true){
+        //アカウント登録済み
+        if(AccountManager.loginedAccount(view.getContext())){
             Intent intent = new Intent(MainActivity.this, VoiceGuideActivity.class);
             startActivity(intent);
             return;
