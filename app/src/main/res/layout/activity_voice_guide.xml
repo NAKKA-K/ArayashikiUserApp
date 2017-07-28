@@ -57,7 +57,7 @@
         tools:layout_constraintTop_creator="1" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/reVoiceButton"
         android:layout_width="364dp"
         android:layout_height="171dp"
         android:layout_marginBottom="8dp"

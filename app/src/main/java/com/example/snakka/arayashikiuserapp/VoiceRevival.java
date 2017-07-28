@@ -12,7 +12,7 @@ import static com.example.snakka.arayashikiuserapp.SensorNumber.END;
 import static com.example.snakka.arayashikiuserapp.SensorNumber.FRONT;
 import static com.example.snakka.arayashikiuserapp.SensorNumber.LEFT;
 import static com.example.snakka.arayashikiuserapp.SensorNumber.RIGHT;
-import static com.example.snakka.arayashikiuserapp.VoiceGuideActivity.reVoice;
+import static com.example.snakka.arayashikiuserapp.VoiceGuideActivity.reVoiceButton;
 import static com.example.snakka.arayashikiuserapp.VoiceGuideActivity.textView1;
 import static com.example.snakka.arayashikiuserapp.VoiceGuideActivity.textView2;
 
@@ -42,7 +42,7 @@ public class VoiceRevival {
 
     //directionNumberGetメソッドから方向ナンバーを受け取るためのフィールド
     private int[] directionNums = new int[4];
-    //読み込みをした際に受け取る音声Id配列
+    //読み込みをした際に受け取る音声Id配列(2回目以降は固定化される)
     public static final int[] voiceIds = new int[6];
     //音声ファイル読み込みの可否を格納する配列
     private boolean loadSuccessd[] =
@@ -123,7 +123,7 @@ public class VoiceRevival {
         });
 
         //ボタンをクリックすると音声再生
-        reVoice.setOnClickListener(new View.OnClickListener() {
+        reVoiceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startVoice();
@@ -131,7 +131,7 @@ public class VoiceRevival {
         });
     }
 
-    //音声を再生するメソッド(非同期処理はmainVoiceメソッド内で行われる)
+    //音声を再生するメソッド(非同期処理(Listenerクラス)はmainVoiceメソッド内で行われる)
     public void startVoice() {
         // 配列の中身を見てそれぞれに対応する音声を再生
         for (int i = 0; directionNums[i]!=END; i++) {
@@ -198,6 +198,7 @@ public class VoiceRevival {
                 viewString += directionTexts[LEFT-1] + " ";
             }
         }
+        //文字列を返す
         return viewString;
     }
 }

@@ -10,7 +10,7 @@ public class VoiceGuideActivity extends AppCompatActivity{
     private VoiceRevival voiceRev;
     private HttpCommunication httpCommunication;
     public static TextView textView1,textView2;
-    public static Button reVoice;
+    public static Button reVoiceButton;
     private static BLEManager bleMgr;
 
     @Override
@@ -18,10 +18,12 @@ public class VoiceGuideActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice_guide);
         // TextViewオブジェクト生成
+        // textView1には「前」、「右」、「左」のいずれかが入る
         textView1 = (TextView) findViewById(R.id.textView1);
+        // textView2には「に進めます」、「行き止まりです」のどちらかが入る
         textView2 = (TextView) findViewById(R.id.textView2);
         // Buttonオブジェクト作成
-        reVoice = (Button)findViewById(R.id.button);
+        reVoiceButton = (Button)findViewById(R.id.reVoiceButton);
         //再生機構の初期化
         voiceRev = new VoiceRevival(getApplicationContext());
         //HTTP通信のインスタンス生成
