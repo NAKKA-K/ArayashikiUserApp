@@ -30,11 +30,8 @@ public class HttpCommunication {
     private static final String FILEPATHGET = "/mana/";
     private static final String FILEPATHPOST = "/mana/route";
     private static final int NUMNULL = 0;
-    private static final int HTTP_OK = 200;
-    private static final int HTTP_ERR = 400;
 
-
-    private String block = "false";
+    private static String block = "false";
     private static String currentNum = "null";
     private String fourWayNumberN = "null";
     private String fourWayNumberS = "null";
@@ -44,17 +41,7 @@ public class HttpCommunication {
     //TODO:同じNoでPOSTしないようにするためのフラグ
     private static boolean isIdenticalNumber = true;
 
-    private String trafficLightAddress = "";
-    //TODO:信号機の状態今のところ実装なし
-    //private String trafficLightSignal = "false";]
-
-
-    //このスレッドの処理が終わるまで、trueにしておく
-    //private boolean startFlg = false;
-
-    /*public HttpCommunication(String currentNum){
-        this.currentNum = currentNum;
-    }*/
+    //private String trafficLightAddress = "";
 
     /**
      * asyncTaskToGet()を始めると、自動的にasyncTaskToPost()を始める
@@ -72,11 +59,7 @@ public class HttpCommunication {
                 try {
                     URL url = new URL(PROTOCOL, HOST, PORT, FILEPATHGET + currentNum);
                     getCon = (HttpURLConnection) url.openConnection();
-                    //TODO：初期値で設定されているから必要ない？
-                    //getCon.setRequestMethod("GET");
-                    //getCon.setDoInput(true);
                     getCon.connect();
-                    //TODO:ResponseCodeは今の所使ってないので
                     resCode = getCon.getResponseCode();
                     resultJson = jsonStreamToString(getCon.getInputStream());
                     Log.d("http通信", resultJson);
@@ -89,7 +72,6 @@ public class HttpCommunication {
                         getCon.disconnect();
                     }
                 }
-                //startFlg = false;
                 Log.d("http通信", "doInBackground終了");
 
                 return new Boolean(isResponseCode(resCode));
@@ -147,6 +129,7 @@ public class HttpCommunication {
                     }
                 }else{//POST成功したとき
                     Log.d("http通信","POST成功");
+                    //POSTしたのでsensorList(0)を消去
                     sensorList.remove(0);
                     Log.d("http通信","sensorListのサイズ" + Integer.toString(sensorList.size()));
                 }
@@ -188,13 +171,12 @@ public class HttpCommunication {
     private void jsonanalysis(String json){
         try {
             JSONObject jsonObject = new JSONObject(json);
-            //block = jsonObject.getString("type");
+            block = jsonObject.getString("sensorType");
             fourWayNumberN = jsonObject.getString("nothNo");
             fourWayNumberS = jsonObject.getString("southNo");
             fourWayNumberW = jsonObject.getString("westNo");
             fourWayNumberE = jsonObject.getString("eastNo");
             //trafficLightAddress = jsonObject.getJSONObject("TrafficLight").getString("address");
-            //trafficLightSignal = jsonObject.getJSONObject("TrafficLight").getString("signal");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -213,41 +195,13 @@ public class HttpCommunication {
     private int numStringToInt(String num){
         return num == "null" ? NUMNULL : Integer.parseInt(num);
     }
-
-    public boolean getBlock() {
+    /**trueで進行ブロック、falseで停止ブロック*/
+    public static boolean getBlock() {
         return Boolean.parseBoolean(block);
     }
 
-/*TODO:getメゾットは今は使わない
-    public int getFourWayNumberN() {
-        return fourWayNumberN == "null" ?  NUMNULL : Integer.parseInt(fourWayNumberN);
-    }
-
-    public int getFourWayNumberS() {
-        return fourWayNumberS == "null" ? NUMNULL : Integer.parseInt(fourWayNumberS);
-    }
-
-    public int getFourWayNumberW() {
-        return fourWayNumberW == "null" ? NUMNULL : Integer.parseInt(fourWayNumberW);
-    }
-
-    public int getFourWayNumberE() {
-        return fourWayNumberE == "null" ? NUMNULL : Integer.parseInt(fourWayNumberE);
-    }
-*/
-
     /*public String getTrafficLightAddress() {
         return trafficLightAddress;
-    }*/
-
-    /*public int getResponseCode(){
-        return responseCode;
-    }*/
-    /*public boolean getTrafficLightSignal(){
-        return Boolean.parseBoolean(trafficLightSignal);
-    }*/
-    /*public boolean isStartFlg(){
-        return startFlg;
     }*/
 
     /**現在ナンバーと同じならnullを返す*/
@@ -263,14 +217,7 @@ public class HttpCommunication {
         if (sensorList == null || sensorList.isEmpty()) return null;
         return sensorList.get(0);
     }
-    /**Postをする時は、Listを消すのでこちらを使う*/
-/*    public static String getSensorListRemove() {
-        if (HttpCommunication.sensorList == null || sensorList.isEmpty()) return null;
-        String str = sensorList.get(0);
-        //sensorList.remove(0);
-        return str;
-    }
-*/
+
 
     public static void setSensorList(String sensorStr) {
         if(sensorList.isEmpty() && sensorStr != currentNum){
@@ -287,4 +234,5 @@ public class HttpCommunication {
         Log.d("http通信", sensorList.get(sensorList.size()-1) + ":" + sensorStr);
         Log.d("http通信","add成功" + Integer.toString(sensorList.size()));
     }
+
 }
