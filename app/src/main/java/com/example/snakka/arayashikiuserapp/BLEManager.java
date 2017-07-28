@@ -1,23 +1,19 @@
 package com.example.snakka.arayashikiuserapp;
 
 
-import android.app.Activity;
-import android.app.ProgressDialog;
+import android.app.IntentService;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
-import android.os.AsyncTask;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 
 
-public class BLEManager extends AsyncTask<Void, Void, Void> {
-    private static Context context;
+public class BLEManager extends IntentService {
+    private static Context guideContext;
     private static BluetoothAdapter bleAdapter;
     private String sensorNumStr;
 
@@ -25,10 +21,39 @@ public class BLEManager extends AsyncTask<Void, Void, Void> {
     private static BLEScanner bleScanner = null;
     private static BLEGattGetter bleGattGetter = null;
 
+    public BLEManager(String name){
+        super(name);
+        Log.e("ManagerStringじゃあ", "イケてる");
+    }
 
     public BLEManager(){
-        if(bleScanner != null) bleScanner = new BLEScanner(bleAdapter.getBluetoothLeScanner());
-        if(bleGattGetter != null) bleGattGetter = new BLEGattGetter();
+        super("BLEManager");
+        Log.e("Managerじゃあ", "イケてる");
+    }
+
+    @Override
+    public void onCreate(){
+        if(bleScanner == null){
+            bleScanner = new BLEScanner(bleAdapter.getBluetoothLeScanner());
+            Log.e("onCreateじゃあ", "BLEScannerが生成された");
+        }
+        if(bleGattGetter == null){
+            bleGattGetter = new BLEGattGetter();
+            Log.e("onCreateじゃあ", "BLEGattが生成された");
+        }
+
+        this.onBluetooth(); //Bluetoothを起動
+    }
+
+    @Override
+    protected void onHandleIntent(Intent intent){
+        Log.e("onHandleIntentじゃあ", "イケてる");
+
+        while(true){
+            sensorNumGetter();
+
+            setSensorPost();
+        }
     }
 
 
@@ -51,27 +76,14 @@ public class BLEManager extends AsyncTask<Void, Void, Void> {
     }
 
     /** Bluetoothを強制的にONにする */
-    public void onBluetooth(Activity activity){
+    public void onBluetooth(){
         if(bleAdapter.isEnabled() == false){
             bleAdapter.enable(); //強制的にBluetoothを起動する
         }
-        this.context = activity;
     }
 
 
 
-
-    @Override
-    protected Void doInBackground(Void... params) {
-        //TODO:HACK:AsyncTaskで長時間のループは避けるべきとのこと
-        while(isCancelled() == false){
-            sensorNumGetter();
-
-            setSensorPost();
-        }
-
-        return null;
-    }
 
     /** センサをスキャン、データの取得をしてそれぞれのクラスの内部に保存しておく */
     public void sensorNumGetter(){
@@ -80,17 +92,13 @@ public class BLEManager extends AsyncTask<Void, Void, Void> {
         bleScanner.startScanDevice();
 
         //センサーがスキャンできればスキャンが停止して、isScanningがfalseに代わる
-        while(bleScanner.getIsScanning()){
-            if(isCancelled()) return;
-        }
+        while(bleScanner.getIsScanning()){}
 
 
-        bleGattGetter.connectGatt(context, bleScanner.getSensorDevice()); //切断は自動でしてくれる
+        bleGattGetter.connectGatt(getContext(), bleScanner.getSensorDevice()); //切断は自動でしてくれる
 
         //センサ番号の取得待ち
-        while(bleGattGetter.isGattGot() == false){
-            if(isCancelled()) return;
-        }
+        while(bleGattGetter.isGattGot() == false){}
     }
 
 
@@ -102,14 +110,14 @@ public class BLEManager extends AsyncTask<Void, Void, Void> {
         }
 
         Log.e("onPostExecute()", "センサー番号 = " + sensorNumStr);
-        //Toast.makeText(context, "センサー番号 = " + sensorNumStr, Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), "センサー番号 = " + sensorNumStr, Toast.LENGTH_LONG).show();
 
         HttpCommunication.setSensorList(sensorNumStr);
     }
 
 
     @Override
-    protected void onCancelled(){
+    public void onDestroy(){
         bleScanner.cancelScanner();
         bleGattGetter.cancelGattGetter();
     }
@@ -118,7 +126,7 @@ public class BLEManager extends AsyncTask<Void, Void, Void> {
     public String getSensorNumStr(){ return sensorNumStr; }
     public void setSensorNumStr(String numStr){ sensorNumStr = numStr; }
 
-    public static Context getGuideContext(){ return context; }
-    public static void setContext(Context context){ BLEManager.context = context; }
+    public static void setContext(Context context){ guideContext = context; }
+    private Context getContext(){ return guideContext; }
 }
 
