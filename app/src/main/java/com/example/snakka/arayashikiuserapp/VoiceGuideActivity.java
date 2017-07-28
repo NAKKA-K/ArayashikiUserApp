@@ -24,7 +24,7 @@ public class VoiceGuideActivity extends AppCompatActivity{
         textView2 = (TextView) findViewById(R.id.textView2);
         // Buttonオブジェクト作成
         reVoiceButton = (Button)findViewById(R.id.reVoiceButton);
-        //再生機構の初期化
+        //音声再生機構の初期化
         voiceRev = new VoiceRevival(getApplicationContext());
         //HTTP通信のインスタンス生成
         httpCommunication = new HttpCommunication();
