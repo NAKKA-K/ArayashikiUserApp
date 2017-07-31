@@ -34,6 +34,7 @@ public class BLEManager extends IntentService {
 
     @Override
     public void onCreate(){
+        super.onCreate();
         if(bleScanner == null){
             bleScanner = new BLEScanner(bleAdapter.getBluetoothLeScanner());
             Log.e("onCreate()", "BLEScannerが生成された");
@@ -128,6 +129,7 @@ public class BLEManager extends IntentService {
 
     @Override
     public void onDestroy(){
+        super.onDestroy();
         isLoop = false;
         bleScanner.cancelScanner();
         bleGattGetter.cancelGattGetter();
