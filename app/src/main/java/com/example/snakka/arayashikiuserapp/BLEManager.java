@@ -16,6 +16,7 @@ public class BLEManager extends IntentService {
     private static Context guideContext;
     private static BluetoothAdapter bleAdapter;
     private String sensorNumStr;
+    private static boolean isLoop = true;
 
     //別クラスを内部に保存する
     private static BLEScanner bleScanner = null;
@@ -23,38 +24,47 @@ public class BLEManager extends IntentService {
 
     public BLEManager(String name){
         super(name);
-        Log.e("ManagerStringじゃあ", "イケてる");
+        Log.e("Manager(name)", "通過");
     }
 
     public BLEManager(){
         super("BLEManager");
-        Log.e("Managerじゃあ", "イケてる");
+        Log.e("Manager()", "通過");
     }
 
     @Override
     public void onCreate(){
         if(bleScanner == null){
             bleScanner = new BLEScanner(bleAdapter.getBluetoothLeScanner());
-            Log.e("onCreateじゃあ", "BLEScannerが生成された");
+            Log.e("onCreate()", "BLEScannerが生成された");
         }
         if(bleGattGetter == null){
             bleGattGetter = new BLEGattGetter();
-            Log.e("onCreateじゃあ", "BLEGattが生成された");
+            Log.e("onCreate()", "BLEGattが生成された");
         }
 
         this.onBluetooth(); //Bluetoothを起動
+        isLoop = true;
     }
 
     @Override
     protected void onHandleIntent(Intent intent){
-        Log.e("onHandleIntentじゃあ", "イケてる");
-
-        while(true){
-            sensorNumGetter();
-
-            setSensorPost();
+        if(intent == null){
+            return;
         }
+
+        Log.e("onHandleIntent()", "通過");
+
+        while(isLoop){ //TODO:HACK無限ループのまま抜け出せないからエラーが出ているのではないか？
+            synchronized (this){
+                sensorNumGetter();
+
+                setSensorPost();
+            }
+        }
+
     }
+
 
 
     /** Adapterの取得 */
@@ -118,6 +128,7 @@ public class BLEManager extends IntentService {
 
     @Override
     public void onDestroy(){
+        isLoop = false;
         bleScanner.cancelScanner();
         bleGattGetter.cancelGattGetter();
     }

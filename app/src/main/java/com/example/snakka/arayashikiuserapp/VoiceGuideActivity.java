@@ -12,6 +12,7 @@ public class VoiceGuideActivity extends AppCompatActivity{
     private HttpCommunication httpCommunication;
     public static TextView textView1,textView2;
     public static Button reVoice;
+    private Intent serviceIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +45,17 @@ public class VoiceGuideActivity extends AppCompatActivity{
 
     private void initBLE(){
         BLEManager.setContext(this);
-        Intent intent = new Intent(this, BLEManager.class);
-        this.startService(intent);
+        serviceIntent = new Intent(this, BLEManager.class);
+        if(serviceIntent == null) Log.e("initBLE()", "serviceIntentがnullだーーーー！！");
+        if(serviceIntent != null){
+            this.startService(serviceIntent);
+        }
+    }
+
+    @Override
+    protected void onDestroy(){
+        if(serviceIntent == null) return;
+        this.stopService(serviceIntent);
+        serviceIntent = null;
     }
 }
