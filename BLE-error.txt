@@ -1,0 +1,27 @@
+07-31 18:11:53.398 31180-31180/com.example.snakka.arayashikiuserapp
+E/AndroidRuntime:
+	FATAL EXCEPTION: main
+	Process: com.example.snakka.arayashikiuserapp, PID: 31180
+	java.lang.RuntimeException: Unable to start service com.example.snakka.arayashikiuserapp.BLEManager@74c3b45 with Intent { cmp=com.example.snakka.arayashikiuserapp/.BLEManager }: java.lang.NullPointerException: Attempt to invoke virtual method 'android.os.Message android.app.IntentService$ServiceHandler.obtainMessage()' on a null object reference
+		at android.app.ActivityThread.handleServiceArgs(ActivityThread.java:3237)
+		at android.app.ActivityThread.-wrap17(ActivityThread.java)
+		at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1597)
+		at android.os.Handler.dispatchMessage(Handler.java:111)
+		at android.os.Looper.loop(Looper.java:207)
+		at android.app.ActivityThread.main(ActivityThread.java:5765)
+		at java.lang.reflect.Method.invoke(Native Method)
+		at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:789)
+		at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:679)
+	Caused by: java.lang.NullPointerException: Attempt to invoke virtual method 'android.os.Message android.app.IntentService$ServiceHandler.obtainMessage()' on a null object reference
+		at android.app.IntentService.onStart(IntentService.java:117)
+		at android.app.IntentService.onStartCommand(IntentService.java:131)
+		at android.app.ActivityThread.handleServiceArgs(ActivityThread.java:3220)
+		at android.app.ActivityThread.-wrap17(ActivityThread.java)?
+		at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1597)?
+		at android.os.Handler.dispatchMessage(Handler.java:111)?
+		at android.os.Looper.loop(Looper.java:207)?
+		at android.app.ActivityThread.main(ActivityThread.java:5765)?
+		at java.lang.reflect.Method.invoke(Native Method)?
+		at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:789)?
+		at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:679)?
+07-31 18:13:42.825 31180-31180/com.example.snakka.arayashikiuserapp I/Process: Sending signal. PID: 31180 SIG: 9

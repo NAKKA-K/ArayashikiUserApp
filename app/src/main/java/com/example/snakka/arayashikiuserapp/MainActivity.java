@@ -1,6 +1,9 @@
 package com.example.snakka.arayashikiuserapp;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -23,13 +26,23 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    //TODO:テスト実装
     /*startButtonを押したときの動作
      *1度アカウント登録していた場合は音声案内画面に。
      *始めてアプリを起動したときはアカウント登録画面に飛ぶ。*/
     public void onStartButtonClick(View view){
-        //TODO:テスト実装。現在の作業はすべて音声案内画面で行われるはずなため、常にtrueになるように設定
-        if(AccountManager.loginedAccount(view.getContext()) == true){
+        //アカウント登録済み
+        if(AccountManager.loginedAccount(view.getContext())){
+            if(checkAppPermission() == false){
+                if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION) == false){
+                    //ポップアップを2度と表示しない設定になっている
+                    Toast.makeText(this, "位置情報の権限が許可されていません", Toast.LENGTH_LONG).show();
+                }else{
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                }
+                return;
+            }
+
+
             Intent intent = new Intent(MainActivity.this, VoiceGuideActivity.class);
             startActivity(intent);
             return;
@@ -40,6 +53,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-
+    /** permissionが設定されていればtrue */
+    private boolean checkAppPermission(){
+        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+    }
 
 }

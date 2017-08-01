@@ -1,5 +1,6 @@
 package com.example.snakka.arayashikiuserapp;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
@@ -11,7 +12,7 @@ public class VoiceGuideActivity extends AppCompatActivity{
     private HttpCommunication httpCommunication;
     public static TextView textView1,textView2;
     public static Button reVoice;
-    private static BLEManager bleMgr;
+    private Intent serviceIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +27,7 @@ public class VoiceGuideActivity extends AppCompatActivity{
         voiceRev = new VoiceRevival(getApplicationContext());
         //HTTP通信のインスタンス生成
         httpCommunication = new HttpCommunication();
+
     }
 
 
@@ -38,23 +40,22 @@ public class VoiceGuideActivity extends AppCompatActivity{
         //HTTPのGETアンドPOSTを1秒毎に交互にします
         httpCommunication.asyncTaskToGet();
 
-
         initBLE();
-        bleMgr.execute();
     }
 
+    private void initBLE(){
+        BLEManager.setContext(this);
+        serviceIntent = new Intent(this, BLEManager.class);
+        if(serviceIntent == null) Log.e("initBLE()", "serviceIntentがnullだーーーー！！");
+        if(serviceIntent != null){
+            this.startService(serviceIntent);
+        }
+    }
 
     @Override
-    protected void onStop(){
-        bleMgr.cancel(true);
+    protected void onDestroy(){
+        if(serviceIntent == null) return;
+        this.stopService(serviceIntent);
+        serviceIntent = null;
     }
-
-
-    /** BLE通信をするために必要な前準備を実装したメソッド */
-    private void initBLE(){
-        bleMgr = new BLEManager();
-
-        bleMgr.onBluetooth(this); //Bluetoothを起動
-    }
-
 }
