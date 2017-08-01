@@ -1,6 +1,9 @@
 package com.example.snakka.arayashikiuserapp;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -27,6 +30,17 @@ public class MainActivity extends AppCompatActivity {
      *1度アカウント登録していた場合は音声案内画面に。
      *始めてアプリを起動したときはアカウント登録画面に飛ぶ。*/
     public void onStartButtonClick(View view){
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION) == false){
+                //ポップアップを2度と表示しない設定になっている
+                Toast.makeText(this, "位置情報の権限が許可されていません", Toast.LENGTH_LONG).show();
+            }else{
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+            }
+            return;
+        }
+
+
         //アカウント登録済み
         if(AccountManager.loginedAccount(view.getContext())){
             Intent intent = new Intent(MainActivity.this, VoiceGuideActivity.class);
