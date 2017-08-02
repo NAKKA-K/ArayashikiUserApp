@@ -33,6 +33,7 @@
             android:screenOrientation="portrait"
         </activity>
 
+        <service android:name="BLEManager"/>
     </application>
 
 </manifest>
