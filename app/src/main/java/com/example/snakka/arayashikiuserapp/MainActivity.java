@@ -18,20 +18,18 @@ public class MainActivity extends AppCompatActivity {
 
         if(BLEManager.isBleSupport(this) == false){
             Toast.makeText(this, "Bluetoothに対応していません", Toast.LENGTH_LONG).show();
-            //TODO:HACK:仮想マシンでは絶対に終了してしまうので、一時コメント化
-            //this.finishAndRemoveTask();
+            this.finishAndRemoveTask();
         }
 
     }
 
 
 
-    /*startButtonを押したときの動作
-     *1度アカウント登録していた場合は音声案内画面に。
-     *始めてアプリを起動したときはアカウント登録画面に飛ぶ。*/
+    /** 1度アカウント登録していた場合は音声案内画面に。始めてアプリを起動したときはアカウント登録画面に飛ぶ。*/
     public void onStartButtonClick(View view){
         //アカウント登録済み
         if(AccountManager.loginedAccount(view.getContext())){
+            //位置情報許可を持っていない
             if(checkAppPermission() == false){
                 if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION) == false){
                     //ポップアップを2度と表示しない設定になっている
