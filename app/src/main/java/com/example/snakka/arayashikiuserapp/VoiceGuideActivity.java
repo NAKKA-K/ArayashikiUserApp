@@ -3,12 +3,15 @@ package com.example.snakka.arayashikiuserapp;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.widget.Button;
 import android.util.Log;
 import android.widget.TextView;
 
+import static com.example.snakka.arayashikiuserapp.VoiceRevival.soundPool;
+
 public class VoiceGuideActivity extends AppCompatActivity{
-    private VoiceRevival voiceRev;
+    public static VoiceRevival voiceRev;
     private HttpCommunication httpCommunication;
     public static TextView textView1,textView2;
     public static Button reVoiceButton;
@@ -20,12 +23,13 @@ public class VoiceGuideActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice_guide);
-        // TextViewオブジェクト生成
+        //仮消し
+        // TextViewインスタンス生成
         // textView1には「前」、「右」、「左」のいずれかが入る
-        textView1 = (TextView) findViewById(R.id.textView1);
+        //textView1 = (TextView) findViewById(R.id.textView1);
         // textView2には「に進めます」、「行き止まりです」のどちらかが入る
-        textView2 = (TextView) findViewById(R.id.textView2);
-        // Buttonオブジェクト作成
+        //textView2 = (TextView) findViewById(R.id.textView2);
+        // Buttonインスタンス作成
         reVoiceButton = (Button)findViewById(R.id.reVoiceButton);
         //音声再生機構の初期化
         voiceRev = new VoiceRevival(getApplicationContext());
@@ -38,13 +42,10 @@ public class VoiceGuideActivity extends AppCompatActivity{
     @Override
     protected void onStart(){
         super.onStart();
-        //行ける方向の音声再生、文字表示、もう一度再生可能(全てを司る！！！)
-        voiceRev.mainVoice();
-
         //HTTPのGETアンドPOSTを1秒毎に交互にします
         httpCommunication.asyncTaskToGet();
-
-        initBLE();
+        //今は仮消し
+        //initBLE();
     }
 
     private void initBLE(){
@@ -58,6 +59,7 @@ public class VoiceGuideActivity extends AppCompatActivity{
 
     @Override
     protected void onDestroy(){
+        super.onDestroy();
         if(serviceIntent == null) return;
         this.stopService(serviceIntent);
         serviceIntent = null;

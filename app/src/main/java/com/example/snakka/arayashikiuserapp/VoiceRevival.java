@@ -6,6 +6,7 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 
 import static com.example.snakka.arayashikiuserapp.SensorNumber.END;
@@ -59,6 +60,7 @@ public class VoiceRevival {
     private int loadSuccessIdx = 0;
     // TextViewに表示する文字列を格納変数(後に戻り値となる)
     public String viewString = "";
+    private HttpCommunication httpCommunication;
 
     // 初期化
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -66,7 +68,8 @@ public class VoiceRevival {
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
             soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
-        } else {
+        }
+        else {
             // 音声の属性を設定
             audioAttributes = new AudioAttributes.Builder()
                     // USAGE_MEDIA
@@ -91,44 +94,60 @@ public class VoiceRevival {
 
     //音声再生の全てを司るメソッド
     public void mainVoice() {
-        //行ける方向の文字列を返す(先に同期処理を終わらせてしまう)
-        viewString = viewVoice();
-        // 返ってきたviewStringの中身が空のままだったら行き止まりと判定
-        if (viewString.isEmpty()) {
-            textView2.setText("行き止まりです");
-        } else {
-            textView1.setText(viewString);
-            textView2.setText("に進めます");
-        }
+        //blockがfalseだった時
+        if(!HttpCommunication.getBlock()) {
+            Log.e("HttpCommunication","blockはfalse");
+            // 方向ナンバーを受け取る
+            Log.e("SensorNumber","ナンバーを受け取ります");
+            senNum = new SensorNumber();
+            directionNums = senNum.getCourse();
+            Log.e("SensorNumber","ナンバーを受け取りました");
+            //行ける方向の文字列を返す(先に同期処理を終わらせてしまう)
+            //ちょっと今は省略
+            /*viewString = viewVoice();
+            // 返ってきたviewStringの中身が空のままだったら行き止まりと判定
+            if (viewString.isEmpty()) {
+                textView2.setText("行き止まりです");
+            } else {
+                textView1.setText(viewString);
+                textView2.setText("に進めます");
+            }*/
 
-        // 読み込みが終わったか確認する関数
-        // 読み込みが非同期で行われているためか、
-        // この関数も非同期で行われるっぽい
-        // 1読み込みにつき1回この関数が呼ばれる
-        // そのため同じ音声に関しては1度読み込まれれば解放→再度読み込みとしない限り呼ばれることはない(byよーすけさん)
-        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-            @Override
-            public void onLoadComplete(SoundPool soundPool, int soundId, int status) {
-                // 読み込みが成功している(statusが0)なら
-                if (status == 0) {
-                    loadSuccessd[loadSuccessIdx++] = true;
-                    // 無事全部読み込めてたら
-                    if (loadSuccessd[0] && loadSuccessd[1] && loadSuccessd[2] && loadSuccessd[3] && loadSuccessd[4]) {
-                        //音声再生をする
-                        //startVoiceメソッド内に同期処理を記述
-                        startVoice();
+            // 読み込みが終わったか確認する関数
+            // 読み込みが非同期で行われているためか、
+            // この関数も非同期で行われるっぽい
+            // 1読み込みにつき1回この関数が呼ばれる
+            // そのため同じ音声に関しては1度読み込まれれば解放→再度読み込みとしない限り呼ばれることはない(byよーすけさん)
+            /*soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+                @Override
+                public void onLoadComplete(SoundPool soundPool, int soundId, int status) {
+                    // 読み込みが成功している(statusが0)なら
+                    Log.e("VoiceRevival","読み込みチェックを行います");
+                    if (status == 0) {
+                            loadSuccessd[loadSuccessIdx++] = true;
+                            Log.e("VoiceRevival","読み込みは成功しています");
+                    }
+                        // 無事全部読み込めてたら
+                        if (loadSuccessd[0] && loadSuccessd[1] && loadSuccessd[2] && loadSuccessd[3] && loadSuccessd[4]) {
+                            //音声再生をする
+                            //startVoiceメソッド内に同期処理を記述
+                            Log.e("VoiceRevival","音声を再生します");
+                            startVoice();
                     }
                 }
-            }
-        });
+            });*/
 
-        //ボタンをクリックすると音声再生
-        reVoiceButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startVoice();
-            }
-        });
+            //音声再生
+            startVoice();
+
+            //ボタンをクリックすると音声再生
+            reVoiceButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startVoice();
+                }
+            });
+        }
     }
 
     //音声を再生するメソッド(非同期処理(Listenerクラス)はmainVoiceメソッド内で行われる)
@@ -178,9 +197,7 @@ public class VoiceRevival {
     {
         //文字列の初期化
         viewString="";
-        // 方向ナンバーを受け取る
-        senNum = new SensorNumber();
-        directionNums = senNum.getCourse();
+
 
         //先に同期処理を終わらせるために文字列を返す
         for (int i = 0; directionNums[i]!=END; i++) {

@@ -1,7 +1,6 @@
 package com.example.snakka.arayashikiuserapp;
 
 import android.os.AsyncTask;
-import android.os.storage.StorageManager;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -15,6 +14,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Random;
+
+import static com.example.snakka.arayashikiuserapp.VoiceGuideActivity.voiceRev;
 
 /**
  * Created by morikei on 2017/07/03.
@@ -34,12 +36,14 @@ public class HttpCommunication {
     private static final int HTTP_ERR = 400;
 
 
-    private String block = "false";
+    private static String block = "false";
     private static String currentNum = "null";
     private String fourWayNumberN = "null";
     private String fourWayNumberS = "null";
     private String fourWayNumberW = "null";
     private String fourWayNumberE = "null";
+
+    static Random rnd;
 
     //TODO:同じNoでPOSTしないようにするためのフラグ
     private static boolean isIdenticalNumber = true;
@@ -110,6 +114,8 @@ public class HttpCommunication {
                     SensorNumber.setNextWest(numStringToInt(fourWayNumberW));
                     isIdenticalNumber = false;
                     Log.d("http通信","GET成功");
+                    //2秒ごとに音声を再生できるかどうか判定
+                    voiceRev.mainVoice();
                 }
                 Log.d("http通信", "Get終了");
                 try {
@@ -140,6 +146,7 @@ public class HttpCommunication {
                 isRes = (isResponseCode(resCode));
                 if(!isRes){//POSTができなかった場合
                     if( resCode == -1 ) {
+                        //voiceRev.mainVoice();
                         Log.d("http通信", "同じNoなのでPOSTしない");
                     }
                     else {
@@ -149,6 +156,7 @@ public class HttpCommunication {
                     Log.d("http通信","POST成功");
                     sensorList.remove(0);
                     Log.d("http通信","sensorListのサイズ" + Integer.toString(sensorList.size()));
+
                 }
                 isIdenticalNumber = true;
                 //ここでまた、
@@ -188,7 +196,16 @@ public class HttpCommunication {
     private void jsonanalysis(String json){
         try {
             JSONObject jsonObject = new JSONObject(json);
-            //block = jsonObject.getString("type");
+
+            //ちょっと今仮にランダム使ってます
+            int random = rnd.nextInt(2);
+            if(random==1){
+                block = "true";//jsonObject.getString("type");
+            }
+            else if(random==0){
+                block = "false";
+            }
+
             fourWayNumberN = jsonObject.getString("nothNo");
             fourWayNumberS = jsonObject.getString("southNo");
             fourWayNumberW = jsonObject.getString("westNo");
@@ -214,7 +231,7 @@ public class HttpCommunication {
         return num == "null" ? NUMNULL : Integer.parseInt(num);
     }
 
-    public boolean getBlock() {
+    public static boolean getBlock() {
         return Boolean.parseBoolean(block);
     }
 
@@ -270,6 +287,16 @@ public class HttpCommunication {
 */
 
     public static void setSensorList(String sensorStr) {
+        //仮にランダム使ってます
+        int random = rnd.nextInt(2);
+        if(random==0)
+        {
+            sensorStr="1";
+        }
+        else
+        {
+            sensorStr="2";
+        }
         if(sensorList.isEmpty() && sensorStr != currentNum){
             Log.d("http通信", "add成功２" + Integer.toString(sensorList.size()));
             sensorList.add(sensorStr);
