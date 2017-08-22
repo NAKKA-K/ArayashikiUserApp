@@ -41,7 +41,7 @@ public class VoiceGuideActivity extends AppCompatActivity{
         super.onStart();
         //HTTPのGETアンドPOSTを1秒毎に交互にします
         httpCommunication.asyncTaskToGet();
-        //今は仮消し
+
         initBLE();
     }
 
