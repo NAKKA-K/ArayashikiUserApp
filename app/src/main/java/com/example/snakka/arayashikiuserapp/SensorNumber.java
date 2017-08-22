@@ -20,7 +20,7 @@ public class SensorNumber {
     private static final int SOUTH = 2;
     private static final int WEST = 3;
 
-    private static int[]  drectionNumber = new int[4]; //どの方角に進路があるかを格納：0 無
+    public static int[]  drectionNumber = new int[4]; //どの方角に進路があるかを格納：0 無
 
     private static int currentNum; //現在地のNumber
     private static int backNum;    //一つ前に通り過ぎたNumber

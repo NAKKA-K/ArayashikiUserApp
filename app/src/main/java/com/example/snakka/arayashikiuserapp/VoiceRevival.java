@@ -9,10 +9,13 @@ import android.os.Build;
 import android.util.Log;
 import android.view.View;
 
+
+import static com.example.snakka.arayashikiuserapp.HttpCommunication.setSensorList;
 import static com.example.snakka.arayashikiuserapp.SensorNumber.END;
 import static com.example.snakka.arayashikiuserapp.SensorNumber.FRONT;
 import static com.example.snakka.arayashikiuserapp.SensorNumber.LEFT;
 import static com.example.snakka.arayashikiuserapp.SensorNumber.RIGHT;
+import static com.example.snakka.arayashikiuserapp.SensorNumber.drectionNumber;
 import static com.example.snakka.arayashikiuserapp.VoiceGuideActivity.reVoiceButton;
 import static com.example.snakka.arayashikiuserapp.VoiceGuideActivity.textView1;
 import static com.example.snakka.arayashikiuserapp.VoiceGuideActivity.textView2;
@@ -40,9 +43,6 @@ public class VoiceRevival {
                     "右",
                     "左"
             };
-
-    //directionNumberGetメソッドから方向ナンバーを受け取るためのフィールド
-    private int[] directionNums = new int[4];
     //読み込みをした際に受け取る音声Id配列(2回目以降は固定化される)
     public static final int[] voiceIds = new int[6];
     //音声ファイル読み込みの可否を格納する配列
@@ -100,7 +100,7 @@ public class VoiceRevival {
             // 方向ナンバーを受け取る
             Log.e("SensorNumber","ナンバーを受け取ります");
             senNum = new SensorNumber();
-            directionNums = senNum.getCourse();
+            senNum.getCourse();
             Log.e("SensorNumber","ナンバーを受け取りました");
             //行ける方向の文字列を返す(先に同期処理を終わらせてしまう)
             //ちょっと今は省略
@@ -153,36 +153,28 @@ public class VoiceRevival {
     //音声を再生するメソッド(非同期処理(Listenerクラス)はmainVoiceメソッド内で行われる)
     public void startVoice() {
         // 配列の中身を見てそれぞれに対応する音声を再生
-        for (int i = 0; directionNums[i]!=END; i++) {
-            //「前」に行ける場合
-            if (directionNums[i] == FRONT) {
-                // ここで行ける方向の音声を再生
-                soundPool.play(voiceIds[FRONT - 1], 1.0f, 1.0f, 0, 0, 1);
-                //音声再生の待ち時間
-                try {
-                    Thread.sleep(700);
-                } catch (InterruptedException e) {
-                }
+        for (int i = 0; drectionNumber[i]!=END; i++) {
+            switch(drectionNumber[i]) {
+                //「前」に行ける場合
+                case FRONT:
+                    soundPool.play(voiceIds[FRONT - 1], 1.0f, 1.0f, 0, 0, 1);
+                    break;
+                //「右」に行ける場合
+                case RIGHT:
+                    soundPool.play(voiceIds[RIGHT - 1], 1.0f, 1.0f, 0, 0, 1);
+                    break;
+                //「左」に行ける場合
+                case LEFT:
+                    soundPool.play(voiceIds[LEFT - 1], 1.0f, 1.0f, 0, 0, 1);
+                    break;
             }
-            //「右」に行ける場合
-            else if (directionNums[i] == RIGHT) {
-                soundPool.play(voiceIds[RIGHT - 1], 1.0f, 1.0f, 0, 0, 1);
-                try {
-                    Thread.sleep(700);
-                } catch (InterruptedException e) {
-                }
-            }
-            //「左」に行ける場合
-            else {
-                soundPool.play(voiceIds[LEFT - 1], 1.0f, 1.0f, 0, 0, 1);
-                try {
-                    Thread.sleep(700);
-                } catch (InterruptedException e) {
-                }
+            try {
+                Thread.sleep(700);
+            } catch (InterruptedException e) {
             }
         }
         //配列の中身が0なら
-        if (directionNums[0]==END) {
+        if (drectionNumber[0]==END) {
             // 「行き止まりです」の音声を再生
             soundPool.play(voiceIds[4], 1.0f, 1.0f, 0, 0, 1);
         }
@@ -193,11 +185,10 @@ public class VoiceRevival {
     }
 
     //行ける方向の文字列を返すメソッド(同期処理)
-    public String viewVoice()
+   /* public String viewVoice()
     {
         //文字列の初期化
         viewString="";
-
 
         //先に同期処理を終わらせるために文字列を返す
         for (int i = 0; directionNums[i]!=END; i++) {
@@ -217,5 +208,5 @@ public class VoiceRevival {
         }
         //文字列を返す
         return viewString;
-    }
+    }*/
 }

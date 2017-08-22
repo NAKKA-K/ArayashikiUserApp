@@ -43,7 +43,7 @@ public class HttpCommunication {
     private String fourWayNumberW = "null";
     private String fourWayNumberE = "null";
 
-    static Random rnd;
+    public static Random rnd;
 
     //TODO:同じNoでPOSTしないようにするためのフラグ
     private static boolean isIdenticalNumber = true;
@@ -106,6 +106,7 @@ public class HttpCommunication {
              */
             @Override
             protected void onPostExecute (Boolean isRes) {
+                setSensorList("1");
                 if(isRes) {
                     SensorNumber.setNum(numStringToInt(currentNum));
                     SensorNumber.setNextNorth(numStringToInt(fourWayNumberN));
@@ -146,7 +147,7 @@ public class HttpCommunication {
                 isRes = (isResponseCode(resCode));
                 if(!isRes){//POSTができなかった場合
                     if( resCode == -1 ) {
-                        //voiceRev.mainVoice();
+                        voiceRev.mainVoice();
                         Log.d("http通信", "同じNoなのでPOSTしない");
                     }
                     else {
@@ -197,15 +198,7 @@ public class HttpCommunication {
         try {
             JSONObject jsonObject = new JSONObject(json);
 
-            //ちょっと今仮にランダム使ってます
-            int random = rnd.nextInt(2);
-            if(random==1){
-                block = "true";//jsonObject.getString("type");
-            }
-            else if(random==0){
-                block = "false";
-            }
-
+            block = jsonObject.getString("sensorType");
             fourWayNumberN = jsonObject.getString("nothNo");
             fourWayNumberS = jsonObject.getString("southNo");
             fourWayNumberW = jsonObject.getString("westNo");
@@ -232,6 +225,14 @@ public class HttpCommunication {
     }
 
     public static boolean getBlock() {
+     /*   rnd = new Random();
+        int random = rnd.nextInt(2);
+        if(random==1){
+            block = "true";//jsonObject.getString("type");
+        }
+        else if(random==0){
+            block = "false";
+        }*/
         return Boolean.parseBoolean(block);
     }
 
@@ -288,15 +289,16 @@ public class HttpCommunication {
 
     public static void setSensorList(String sensorStr) {
         //仮にランダム使ってます
-        int random = rnd.nextInt(2);
-        if(random==0)
-        {
-            sensorStr="1";
-        }
-        else
-        {
-            sensorStr="2";
-        }
+        //rnd=new Random();
+        //int random = rnd.nextInt(2);
+        //if(random==0)
+        //{
+            //sensorStr="1"; //trueになるはず
+        //}
+        //else
+        //{
+            //sensorStr="2"; //falseになるはず
+        //}
         if(sensorList.isEmpty() && sensorStr != currentNum){
             Log.d("http通信", "add成功２" + Integer.toString(sensorList.size()));
             sensorList.add(sensorStr);

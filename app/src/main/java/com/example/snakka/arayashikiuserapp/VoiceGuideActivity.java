@@ -8,15 +8,12 @@ import android.widget.Button;
 import android.util.Log;
 import android.widget.TextView;
 
-import static com.example.snakka.arayashikiuserapp.VoiceRevival.soundPool;
 
 public class VoiceGuideActivity extends AppCompatActivity{
     public static VoiceRevival voiceRev;
     private HttpCommunication httpCommunication;
     public static TextView textView1,textView2;
     public static Button reVoiceButton;
-    private static BLEManager bleMgr;
-    public static Button reVoice;
     private Intent serviceIntent;
 
     @Override
