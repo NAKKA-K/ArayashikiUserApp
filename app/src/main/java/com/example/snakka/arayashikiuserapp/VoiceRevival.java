@@ -27,6 +27,7 @@ public class VoiceRevival {
     public static SoundPool soundPool;
     //センサーの方向ナンバーを受け取れるクラス
     private SensorNumber senNum;
+    private int[] sensorNums = new int[4];
     //音声リソース配列
     private static final int voiceResources[] =
             {
@@ -62,6 +63,7 @@ public class VoiceRevival {
     public String viewString = "";
     private HttpCommunication httpCommunication;
 
+    private static int logNum;
     // 初期化
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public VoiceRevival(Context context) {
@@ -98,10 +100,14 @@ public class VoiceRevival {
         if(!HttpCommunication.getBlock()) {
             Log.e("HttpCommunication","blockはfalse");
             // 方向ナンバーを受け取る
-            Log.e("SensorNumber","ナンバーを受け取ります");
+            Log.e("SensorNumber","ナンバーを受け取ります：" );
             senNum = new SensorNumber();
-            senNum.getCourse();
-            Log.e("SensorNumber","ナンバーを受け取りました");
+            sensorNums = senNum.getCourse();
+            Log.e("SensorNumber","ナンバーを受け取りました："
+                    + Integer.toString(sensorNums[0])
+                    + Integer.toString(sensorNums[1])
+                    + Integer.toString(sensorNums[2])
+                    + Integer.toString(sensorNums[3]));
             //行ける方向の文字列を返す(先に同期処理を終わらせてしまう)
             //ちょっと今は省略
             /*viewString = viewVoice();
@@ -138,8 +144,11 @@ public class VoiceRevival {
             });*/
 
             //音声再生
-            startVoice();
-
+            Log.d("sensorCurrent & Back",Integer.toString(senNum.getCurrentNum()) + Integer.toString(logNum));
+            if(senNum.getCurrentNum() != logNum) {
+                startVoice();
+                logNum = senNum.getCurrentNum();
+            }
             //ボタンをクリックすると音声再生
             reVoiceButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -153,8 +162,8 @@ public class VoiceRevival {
     //音声を再生するメソッド(非同期処理(Listenerクラス)はmainVoiceメソッド内で行われる)
     public void startVoice() {
         // 配列の中身を見てそれぞれに対応する音声を再生
-        for (int i = 0; drectionNumber[i]!=END; i++) {
-            switch(drectionNumber[i]) {
+        for (int i = 0; sensorNums[i]!=END; i++) {
+            switch(sensorNums[i]) {
                 //「前」に行ける場合
                 case FRONT:
                     soundPool.play(voiceIds[FRONT - 1], 1.0f, 1.0f, 0, 0, 1);
@@ -174,7 +183,7 @@ public class VoiceRevival {
             }
         }
         //配列の中身が0なら
-        if (drectionNumber[0]==END) {
+        if (sensorNums[0]==END) {
             // 「行き止まりです」の音声を再生
             soundPool.play(voiceIds[4], 1.0f, 1.0f, 0, 0, 1);
         }

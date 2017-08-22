@@ -71,7 +71,7 @@ public class HttpCommunication {
                 HttpURLConnection getCon = null;
                 int resCode = 0;
 
-                if( getSensorList(currentNum) == null ) return false;
+                if( checkSensorList(currentNum) == null ) return false;
                 currentNum = getSensorList();//センサー情報取得
                 try {
                     URL url = new URL(PROTOCOL, HOST, PORT, FILEPATHGET + currentNum);
@@ -106,13 +106,16 @@ public class HttpCommunication {
              */
             @Override
             protected void onPostExecute (Boolean isRes) {
-                setSensorList("1");
+                //rnd = new Random();
+                //setSensorList(Integer.toString(rnd.nextInt(2)));
                 if(isRes) {
+                    /*
                     SensorNumber.setNum(numStringToInt(currentNum));
                     SensorNumber.setNextNorth(numStringToInt(fourWayNumberN));
                     SensorNumber.setNextEast(numStringToInt(fourWayNumberE));
                     SensorNumber.setNextSouth(numStringToInt(fourWayNumberS));
                     SensorNumber.setNextWest(numStringToInt(fourWayNumberW));
+                    */
                     isIdenticalNumber = false;
                     Log.d("http通信","GET成功");
                     //2秒ごとに音声を再生できるかどうか判定
@@ -137,6 +140,7 @@ public class HttpCommunication {
 
 
                 if( isIdenticalNumber ) return -1;
+
                 resCode = AccountManager.httpDataPost(HOST, PORT, FILEPATHPOST,
                         getUserJson(currentNum, AccountManager.getUserName()));
                 return new Integer(resCode);
@@ -157,7 +161,6 @@ public class HttpCommunication {
                     Log.d("http通信","POST成功");
                     sensorList.remove(0);
                     Log.d("http通信","sensorListのサイズ" + Integer.toString(sensorList.size()));
-
                 }
                 isIdenticalNumber = true;
                 //ここでまた、
@@ -198,11 +201,18 @@ public class HttpCommunication {
         try {
             JSONObject jsonObject = new JSONObject(json);
 
+            SensorNumber.setNum(numStringToInt(currentNum));
+            SensorNumber.setNextNorth(numStringToInt(jsonObject.getString("nothNo")));
+            SensorNumber.setNextEast(numStringToInt(jsonObject.getString("eastNo")));
+            SensorNumber.setNextSouth(numStringToInt(jsonObject.getString("southNo")));
+            SensorNumber.setNextWest(numStringToInt(jsonObject.getString("westNo")));
             block = jsonObject.getString("sensorType");
+            /*
             fourWayNumberN = jsonObject.getString("nothNo");
             fourWayNumberS = jsonObject.getString("southNo");
             fourWayNumberW = jsonObject.getString("westNo");
             fourWayNumberE = jsonObject.getString("eastNo");
+            */
             //trafficLightAddress = jsonObject.getJSONObject("TrafficLight").getString("address");
             //trafficLightSignal = jsonObject.getJSONObject("TrafficLight").getString("signal");
         } catch (JSONException e) {
@@ -220,7 +230,7 @@ public class HttpCommunication {
         }
     }
 
-    private int numStringToInt(String num){
+    private static int numStringToInt(String num){
         return num == "null" ? NUMNULL : Integer.parseInt(num);
     }
 
@@ -266,10 +276,13 @@ public class HttpCommunication {
     }*/
 
     /**現在ナンバーと同じならnullを返す*/
-    private static String getSensorList(String currentNum) {
-        if(!sensorList.isEmpty())
-            Log.d("http通信","get(0)" + sensorList.get(0) + "currentNum" + currentNum);
-        if (sensorList == null || sensorList.isEmpty() || sensorList.get(0) == currentNum) return null;
+    private static String checkSensorList(String currentNum) {
+        //if(!sensorList.isEmpty())
+            //Log.d("http通信","get(0)" + sensorList.get(0) + "currentNum" + currentNum);
+        if (sensorList == null || sensorList.isEmpty() || numStringToInt(sensorList.get(0)) == numStringToInt(currentNum)){
+            Log.d("httpCheck","同じNumber");
+            return null;
+        }
         return sensorList.get(0);
     }
 
@@ -299,13 +312,15 @@ public class HttpCommunication {
         //{
             //sensorStr="2"; //falseになるはず
         //}
-        if(sensorList.isEmpty() && sensorStr != currentNum){
-            Log.d("http通信", "add成功２" + Integer.toString(sensorList.size()));
+        if(sensorList.isEmpty() && numStringToInt(sensorStr) != numStringToInt(currentNum)){
+            Log.d("http通信", "add成功?" + Integer.toString(sensorList.size()) + "："
+                    + sensorStr + currentNum);
             sensorList.add(sensorStr);
             return;
         }
-        if(sensorList.isEmpty() || sensorList.get(sensorList.size()-1) == sensorStr) {
+        if(sensorList.isEmpty() || numStringToInt(sensorList.get(sensorList.size()-1)) == numStringToInt(sensorStr)) {
             Log.d("http通信", "add失敗" + Integer.toString(sensorList.size()));
+                Log.d("httpLog","log");
             return; //連続して同じセンサーは受け付けない
         }
         Log.d("http通信", sensorList.get(sensorList.size()-1) + ":" + sensorStr);

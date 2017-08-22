@@ -42,7 +42,7 @@ public class VoiceGuideActivity extends AppCompatActivity{
         //HTTPのGETアンドPOSTを1秒毎に交互にします
         httpCommunication.asyncTaskToGet();
         //今は仮消し
-        //initBLE();
+        initBLE();
     }
 
     private void initBLE(){
