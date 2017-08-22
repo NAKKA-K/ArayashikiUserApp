@@ -71,7 +71,6 @@ public class HttpCommunication {
                 String resultJson = "";
                 HttpURLConnection getCon = null;
                 int resCode = 0;
-                Log.d("http","wwwwww");
                 if( getSensorList(currentNum) == null ) return false;
                 currentNum = getSensorList();//センサー情報取得
                 Log.d("http",currentNum);
@@ -81,15 +80,19 @@ public class HttpCommunication {
                     //TODO：初期値で設定されているから必要ない？
                     //getCon.setRequestMethod("GET");
                     //getCon.setDoInput(true);
+                    Log.d("http","www");
                     getCon.connect();
-                    Log.d("http","err");
+                    //Log.d("http","err");
                     //TODO:ResponseCodeは今の所使ってないので
+                    Log.d("http","aaa");
+                    setSensorList("1");
                     resCode = getCon.getResponseCode();
                     resultJson = jsonStreamToString(getCon.getInputStream());
                     Log.d("http通信", resultJson);
                     jsonanalysis(resultJson);
                 } catch (Exception ex) {
                     System.out.println(ex);
+                    Log.d("http通信","catch通過");
                 } finally {
                     if (getCon != null) {
                         Log.d("http通信", "finally通過");
@@ -149,7 +152,7 @@ public class HttpCommunication {
                 isRes = (isResponseCode(resCode));
                 if(!isRes){//POSTができなかった場合
                     if( resCode == -1 ) {
-                        voiceRev.mainVoice();
+                       // voiceRev.mainVoice();
                         Log.d("http通信", "同じNoなのでPOSTしない");
                     }
                     else {
@@ -293,18 +296,6 @@ public class HttpCommunication {
 */
 
     public static void setSensorList(String sensorStr) {
-        //仮にランダム使ってます
-
-       // rnd=new Random();
-        //int random = rnd.nextInt(2);
-        //if(random==0)
-        //{
-          //  sensorStr="1"; //trueになるはず
-        //}
-        //else
-        //{
-          //  sensorStr="2"; //falseになるはず
-        //}
         if(sensorList.isEmpty() && sensorStr != currentNum){
             Log.d("http通信", "add成功２" + Integer.toString(sensorList.size()));
             sensorList.add(sensorStr);

@@ -95,13 +95,28 @@ public class VoiceRevival {
     //音声再生の全てを司るメソッド
     public void mainVoice() {
         //blockがfalseだった時
-        if(!HttpCommunication.getBlock()) {
+        //Log.d("VoiceRevival",drectionNumber[0]));
+        // 方向ナンバーを受け取る
+       // Log.e("VoiceRevival","ナンバーを受け取ります");
+        //senNum = new SensorNumber();
+        //senNum.getCourse();
+        //Log.e("VoiceRevival","ナンバーを受け取りました");
+        for(int i=0;i<drectionNumber.length;i++)
+            Log.d("VoiceRevival", String.valueOf(drectionNumber[i]));
+       if(HttpCommunication.getBlock()) {
             Log.e("VoiceRevival","blockはfalse");
-            // 方向ナンバーを受け取る
             Log.e("VoiceRevival","ナンバーを受け取ります");
             senNum = new SensorNumber();
             senNum.getCourse();
             Log.e("VoiceRevival","ナンバーを受け取りました");
+
+            for(int i=0;i<4;i++)
+                Log.d("VoiceRevival", String.valueOf(drectionNumber[i]));
+
+        drectionNumber[0]=1;
+        drectionNumber[1]=2;
+        drectionNumber[2]=3;
+        drectionNumber[3]=0;
             //行ける方向の文字列を返す(先に同期処理を終わらせてしまう)
             //ちょっと今は省略
             /*viewString = viewVoice();
@@ -138,7 +153,7 @@ public class VoiceRevival {
             });*/
 
             //音声再生
-            setSensorList("1");
+
             startVoice();
 
             //ボタンをクリックすると音声再生
@@ -149,6 +164,10 @@ public class VoiceRevival {
                 }
             });
         }
+        else {
+           // 「行き止まりです」の音声を再生
+           soundPool.play(voiceIds[4], 1.0f, 1.0f, 0, 0, 1);
+       }
     }
 
     //音声を再生するメソッド(非同期処理(Listenerクラス)はmainVoiceメソッド内で行われる)
