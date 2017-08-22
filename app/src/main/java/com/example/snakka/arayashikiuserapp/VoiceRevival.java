@@ -96,12 +96,12 @@ public class VoiceRevival {
     public void mainVoice() {
         //blockがfalseだった時
         if(!HttpCommunication.getBlock()) {
-            Log.e("HttpCommunication","blockはfalse");
+            Log.e("VoiceRevival","blockはfalse");
             // 方向ナンバーを受け取る
-            Log.e("SensorNumber","ナンバーを受け取ります");
+            Log.e("VoiceRevival","ナンバーを受け取ります");
             senNum = new SensorNumber();
             senNum.getCourse();
-            Log.e("SensorNumber","ナンバーを受け取りました");
+            Log.e("VoiceRevival","ナンバーを受け取りました");
             //行ける方向の文字列を返す(先に同期処理を終わらせてしまう)
             //ちょっと今は省略
             /*viewString = viewVoice();
@@ -138,6 +138,7 @@ public class VoiceRevival {
             });*/
 
             //音声再生
+            setSensorList("1");
             startVoice();
 
             //ボタンをクリックすると音声再生
