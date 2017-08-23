@@ -105,7 +105,7 @@ public class BLEManager extends IntentService {
 
         //TODO:同じNumberが5回続くと抜け出せなくなる
         //センサーがスキャンできればスキャンが停止して、isScanningがfalseに代わる
-        while(bleScanner.getIsScanning()){Log.d("sensorLoop","Scan中");}
+        while(bleScanner.getIsScanning()){}
 
 
         bleGattGetter.connectGatt(getContext(), bleScanner.getSensorDevice()); //切断は自動でしてくれる
