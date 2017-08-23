@@ -106,16 +106,7 @@ public class HttpCommunication {
              */
             @Override
             protected void onPostExecute (Boolean isRes) {
-                //rnd = new Random();
-                //setSensorList(Integer.toString(rnd.nextInt(2)));
                 if(isRes) {
-                    /*
-                    SensorNumber.setNum(numStringToInt(currentNum));
-                    SensorNumber.setNextNorth(numStringToInt(fourWayNumberN));
-                    SensorNumber.setNextEast(numStringToInt(fourWayNumberE));
-                    SensorNumber.setNextSouth(numStringToInt(fourWayNumberS));
-                    SensorNumber.setNextWest(numStringToInt(fourWayNumberW));
-                    */
                     isIdenticalNumber = false;
                     Log.d("http通信","GET成功");
                     //2秒ごとに音声を再生できるかどうか判定
@@ -207,12 +198,6 @@ public class HttpCommunication {
             SensorNumber.setNextSouth(numStringToInt(jsonObject.getString("southNo")));
             SensorNumber.setNextWest(numStringToInt(jsonObject.getString("westNo")));
             block = jsonObject.getString("sensorType");
-            /*
-            fourWayNumberN = jsonObject.getString("nothNo");
-            fourWayNumberS = jsonObject.getString("southNo");
-            fourWayNumberW = jsonObject.getString("westNo");
-            fourWayNumberE = jsonObject.getString("eastNo");
-            */
             //trafficLightAddress = jsonObject.getJSONObject("TrafficLight").getString("address");
             //trafficLightSignal = jsonObject.getJSONObject("TrafficLight").getString("signal");
         } catch (JSONException e) {
@@ -235,14 +220,6 @@ public class HttpCommunication {
     }
 
     public static boolean getBlock() {
-     /*   rnd = new Random();
-        int random = rnd.nextInt(2);
-        if(random==1){
-            block = "true";//jsonObject.getString("type");
-        }
-        else if(random==0){
-            block = "false";
-        }*/
         return Boolean.parseBoolean(block);
     }
 
@@ -301,24 +278,13 @@ public class HttpCommunication {
 */
 
     public static void setSensorList(String sensorStr) {
-        //仮にランダム使ってます
-        //rnd=new Random();
-        //int random = rnd.nextInt(2);
-        //if(random==0)
-        //{
-            //sensorStr="1"; //trueになるはず
-        //}
-        //else
-        //{
-            //sensorStr="2"; //falseになるはず
-        //}
-        if(sensorList.isEmpty() && numStringToInt(sensorStr) != numStringToInt(currentNum)){
+        if(sensorList.isEmpty() && !sensorStr.equals(currentNum)){
             Log.d("http通信", "add成功?" + Integer.toString(sensorList.size()) + "："
                     + sensorStr + currentNum);
             sensorList.add(sensorStr);
             return;
         }
-        if(sensorList.isEmpty() || numStringToInt(sensorList.get(sensorList.size()-1)) == numStringToInt(sensorStr)) {
+        if(sensorList.isEmpty() || sensorList.get(sensorList.size()-1).equals(sensorStr)) {
             Log.d("http通信", "add失敗" + Integer.toString(sensorList.size()));
                 Log.d("httpLog","log");
             return; //連続して同じセンサーは受け付けない
