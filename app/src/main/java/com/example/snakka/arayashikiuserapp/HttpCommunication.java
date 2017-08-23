@@ -38,27 +38,12 @@ public class HttpCommunication {
 
     private static String block = "false";
     private static String currentNum = "null";
-    private String fourWayNumberN = "null";
-    private String fourWayNumberS = "null";
-    private String fourWayNumberW = "null";
-    private String fourWayNumberE = "null";
 
-    public static Random rnd;
 
     //TODO:同じNoでPOSTしないようにするためのフラグ
     private static boolean isIdenticalNumber = true;
 
     private String trafficLightAddress = "";
-    //TODO:信号機の状態今のところ実装なし
-    //private String trafficLightSignal = "false";]
-
-
-    //このスレッドの処理が終わるまで、trueにしておく
-    //private boolean startFlg = false;
-
-    /*public HttpCommunication(String currentNum){
-        this.currentNum = currentNum;
-    }*/
 
     /**
      * asyncTaskToGet()を始めると、自動的にasyncTaskToPost()を始める
@@ -223,34 +208,7 @@ public class HttpCommunication {
         return Boolean.parseBoolean(block);
     }
 
-/*TODO:getメゾットは今は使わない
-    public int getFourWayNumberN() {
-        return fourWayNumberN == "null" ?  NUMNULL : Integer.parseInt(fourWayNumberN);
-    }
-    public int getFourWayNumberS() {
-        return fourWayNumberS == "null" ? NUMNULL : Integer.parseInt(fourWayNumberS);
-    }
-    public int getFourWayNumberW() {
-        return fourWayNumberW == "null" ? NUMNULL : Integer.parseInt(fourWayNumberW);
-    }
-    public int getFourWayNumberE() {
-        return fourWayNumberE == "null" ? NUMNULL : Integer.parseInt(fourWayNumberE);
-    }
-*/
 
-    /*public String getTrafficLightAddress() {
-        return trafficLightAddress;
-    }*/
-
-    /*public int getResponseCode(){
-        return responseCode;
-    }*/
-    /*public boolean getTrafficLightSignal(){
-        return Boolean.parseBoolean(trafficLightSignal);
-    }*/
-    /*public boolean isStartFlg(){
-        return startFlg;
-    }*/
 
     /**現在ナンバーと同じならnullを返す*/
     private static String checkSensorList(String currentNum) {
@@ -268,14 +226,6 @@ public class HttpCommunication {
         if (sensorList == null || sensorList.isEmpty()) return null;
         return sensorList.get(0);
     }
-    /**Postをする時は、Listを消すのでこちらを使う*/
-/*    public static String getSensorListRemove() {
-        if (HttpCommunication.sensorList == null || sensorList.isEmpty()) return null;
-        String str = sensorList.get(0);
-        //sensorList.remove(0);
-        return str;
-    }
-*/
 
     public static void setSensorList(String sensorStr) {
         if(sensorList.isEmpty() && !sensorStr.equals(currentNum)){

@@ -103,45 +103,12 @@ public class VoiceRevival {
             Log.e("SensorNumber","ナンバーを受け取ります：" );
             senNum = new SensorNumber();
             sensorNums = senNum.getCourse();
+
             Log.e("SensorNumber","ナンバーを受け取りました："
                     + Integer.toString(sensorNums[0])
                     + Integer.toString(sensorNums[1])
                     + Integer.toString(sensorNums[2])
                     + Integer.toString(sensorNums[3]));
-            //行ける方向の文字列を返す(先に同期処理を終わらせてしまう)
-            //ちょっと今は省略
-            /*viewString = viewVoice();
-            // 返ってきたviewStringの中身が空のままだったら行き止まりと判定
-            if (viewString.isEmpty()) {
-                textView2.setText("行き止まりです");
-            } else {
-                textView1.setText(viewString);
-                textView2.setText("に進めます");
-            }*/
-
-            // 読み込みが終わったか確認する関数
-            // 読み込みが非同期で行われているためか、
-            // この関数も非同期で行われるっぽい
-            // 1読み込みにつき1回この関数が呼ばれる
-            // そのため同じ音声に関しては1度読み込まれれば解放→再度読み込みとしない限り呼ばれることはない(byよーすけさん)
-            /*soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-                @Override
-                public void onLoadComplete(SoundPool soundPool, int soundId, int status) {
-                    // 読み込みが成功している(statusが0)なら
-                    Log.e("VoiceRevival","読み込みチェックを行います");
-                    if (status == 0) {
-                            loadSuccessd[loadSuccessIdx++] = true;
-                            Log.e("VoiceRevival","読み込みは成功しています");
-                    }
-                        // 無事全部読み込めてたら
-                        if (loadSuccessd[0] && loadSuccessd[1] && loadSuccessd[2] && loadSuccessd[3] && loadSuccessd[4]) {
-                            //音声再生をする
-                            //startVoiceメソッド内に同期処理を記述
-                            Log.e("VoiceRevival","音声を再生します");
-                            startVoice();
-                    }
-                }
-            });*/
 
             //音声再生
             Log.d("sensorCurrent & Back",Integer.toString(senNum.getCurrentNum()) + Integer.toString(logNum));
@@ -193,29 +160,4 @@ public class VoiceRevival {
         }
     }
 
-    //行ける方向の文字列を返すメソッド(同期処理)
-   /* public String viewVoice()
-    {
-        //文字列の初期化
-        viewString="";
-
-        //先に同期処理を終わらせるために文字列を返す
-        for (int i = 0; directionNums[i]!=END; i++) {
-            //「前」に行ける場合
-            if (directionNums[i] == FRONT) {
-                // 前 右・・・といった感じでスペースを空けながら表示するため空白を格納
-                viewString += directionTexts[FRONT-1] + " ";
-            }
-            //「右」に行ける場合
-            else if(directionNums[i] == RIGHT) {
-                viewString += directionTexts[RIGHT-1] + " ";
-            }
-            //「左」に行ける場合
-            else {
-                viewString += directionTexts[LEFT-1] + " ";
-            }
-        }
-        //文字列を返す
-        return viewString;
-    }*/
 }
