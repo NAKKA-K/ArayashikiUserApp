@@ -20,12 +20,6 @@ public class VoiceGuideActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_voice_guide);
-        //仮消し
-        // TextViewインスタンス生成
-        // textView1には「前」、「右」、「左」のいずれかが入る
-        //textView1 = (TextView) findViewById(R.id.textView1);
-        // textView2には「に進めます」、「行き止まりです」のどちらかが入る
-        //textView2 = (TextView) findViewById(R.id.textView2);
         // Buttonインスタンス作成
         reVoiceButton = (Button)findViewById(R.id.reVoiceButton);
         //音声再生機構の初期化
@@ -41,7 +35,7 @@ public class VoiceGuideActivity extends AppCompatActivity{
         super.onStart();
         //HTTPのGETアンドPOSTを1秒毎に交互にします
         httpCommunication.asyncTaskToGet();
-        //今は仮消し
+
         initBLE();
     }
 

@@ -37,31 +37,8 @@ public class VoiceRevival {
                     R.raw.start, //に進めます
                     R.raw.stop   //行き止まりです
             };
-    //方向を示す文字列を格納した配列
-    private static final String[] directionTexts =
-            {
-                    "前",
-                    "右",
-                    "左"
-            };
     //読み込みをした際に受け取る音声Id配列(2回目以降は固定化される)
     public static final int[] voiceIds = new int[6];
-    //音声ファイル読み込みの可否を格納する配列
-    private boolean loadSuccessd[] =
-            {
-                    false,
-                    false,
-                    false,
-                    false,
-                    false
-            };
-    // 読み込みが成功する度に1ずつ加算していく値
-    // 読み込みが完了しているかどうかをチェックする関数内で
-    // 読み込み成否を格納する配列の添え字に使用する
-    private int loadSuccessIdx = 0;
-    // TextViewに表示する文字列を格納変数(後に戻り値となる)
-    public String viewString = "";
-    private HttpCommunication httpCommunication;
 
     private static int logNum;
     // 初期化
