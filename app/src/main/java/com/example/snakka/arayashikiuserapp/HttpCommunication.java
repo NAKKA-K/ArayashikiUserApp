@@ -279,7 +279,7 @@ public class HttpCommunication {
     private static String checkSensorList(String currentNum) {
         //if(!sensorList.isEmpty())
             //Log.d("http通信","get(0)" + sensorList.get(0) + "currentNum" + currentNum);
-        if (sensorList == null || sensorList.isEmpty() || numStringToInt(sensorList.get(0)) == numStringToInt(currentNum)){
+        if (sensorList == null || sensorList.isEmpty() || sensorList.get(0).equals(currentNum)){
             Log.d("httpCheck","同じNumber");
             return null;
         }

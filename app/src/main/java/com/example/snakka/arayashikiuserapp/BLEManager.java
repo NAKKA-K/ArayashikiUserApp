@@ -59,7 +59,7 @@ public class BLEManager extends IntentService {
         while(isLoop){ //TODO:HACK無限ループのまま抜け出せないからエラーが出ているのではないか？
             synchronized (this){
                 sensorNumGetter();
-
+                Log.d("sensorLoop2","Loop中");
                 setSensorPost();
             }
         }
@@ -102,8 +102,9 @@ public class BLEManager extends IntentService {
 
         bleScanner.startScanDevice();
 
+        //TODO:同じNumberが5回続くと抜け出せなくなる
         //センサーがスキャンできればスキャンが停止して、isScanningがfalseに代わる
-        while(bleScanner.getIsScanning()){}
+        while(bleScanner.getIsScanning()){Log.d("sensorLoop","Scan中");}
 
 
         bleGattGetter.connectGatt(getContext(), bleScanner.getSensorDevice()); //切断は自動でしてくれる
@@ -122,6 +123,7 @@ public class BLEManager extends IntentService {
 
         Log.e("onPostExecute()", "センサー番号 = " + sensorNumStr);
         Toast.makeText(getContext(), "センサー番号 = " + sensorNumStr, Toast.LENGTH_LONG).show();
+
 
         HttpCommunication.setSensorList(sensorNumStr);
     }
