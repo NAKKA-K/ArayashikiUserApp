@@ -79,6 +79,7 @@ public class BLEManager extends IntentService {
     public static boolean isBleSupport(Context context){
         initBleAdapter(context);
 
+
         if(bleAdapter == null){
             return false;
         }
