@@ -59,7 +59,7 @@ public class BLEManager extends IntentService {
         while(isLoop){ //TODO:HACK無限ループのまま抜け出せないからエラーが出ているのではないか？
             synchronized (this){
                 sensorNumGetter();
-
+                Log.d("sensorLoop2","Loop中");
                 setSensorPost();
             }
         }
@@ -78,6 +78,7 @@ public class BLEManager extends IntentService {
     /** 端末がBluetoothに対応しているか判定。非対応ならメッセージを表示 */
     public static boolean isBleSupport(Context context){
         initBleAdapter(context);
+
 
         if(bleAdapter == null){
             return false;
@@ -102,6 +103,7 @@ public class BLEManager extends IntentService {
 
         bleScanner.startScanDevice();
 
+        //TODO:同じNumberが5回続くと抜け出せなくなる
         //センサーがスキャンできればスキャンが停止して、isScanningがfalseに代わる
         while(bleScanner.getIsScanning()){}
 
@@ -122,6 +124,7 @@ public class BLEManager extends IntentService {
 
         Log.e("onPostExecute()", "センサー番号 = " + sensorNumStr);
         Toast.makeText(getContext(), "センサー番号 = " + sensorNumStr, Toast.LENGTH_LONG).show();
+
 
         HttpCommunication.setSensorList(sensorNumStr);
     }

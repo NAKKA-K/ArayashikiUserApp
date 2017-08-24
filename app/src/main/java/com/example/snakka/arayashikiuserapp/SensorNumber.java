@@ -1,6 +1,8 @@
 package com.example.snakka.arayashikiuserapp;
 
 
+import android.util.Log;
+
 /**
  * Created by morikei on 2017/05/24.
  * ユーザー側のナンバー操作クラス
@@ -20,19 +22,10 @@ public class SensorNumber {
     private static final int SOUTH = 2;
     private static final int WEST = 3;
 
-    private static int[]  drectionNumber = new int[4]; //どの方角に進路があるかを格納：0 無
+    public static int[]  drectionNumber = new int[4]; //どの方角に進路があるかを格納：0 無
 
     private static int currentNum; //現在地のNumber
     private static int backNum;    //一つ前に通り過ぎたNumber
-
-    //コンストラクターの宣言（初期化
-    public SensorNumber(){
-        currentNum = 0;
-        backNum = 0;
-        for(int i = 0 ; i < drectionNumber.length ; i++){
-            drectionNumber[i] = 0;
-        }
-    }
 
 
     //setNum:センサーから送られる情報をセットする
@@ -41,7 +34,6 @@ public class SensorNumber {
     public static void setNum(int num){
         backNum = currentNum;
         currentNum = num;
-
     }
 
     //TODO:setnext[方角]:サーバーから送られてくる四方のNumberをdrectionNumber[方角]にセットする
@@ -126,7 +118,12 @@ public class SensorNumber {
     //TODO:NORTHから時計回りにbackNumの指す方角を探す
     private int searchBackDrection(){
         int drection = NORTH;
-        for (; drectionNumber[drection] != backNum; drection++) {}
+        Log.d("sensorBacknum",Integer.toString(backNum));
+        Log.d("sensorNum",Integer.toString(drectionNumber[0])
+                + Integer.toString(drectionNumber[1])
+                + Integer.toString(drectionNumber[2])
+                + Integer.toString(drectionNumber[3]));
+        for (; drectionNumber[drection] != backNum && backNum != currentNum; drection++) {}
         return drection;
     }
 

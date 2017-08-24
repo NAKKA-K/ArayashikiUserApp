@@ -1,7 +1,6 @@
 package com.example.snakka.arayashikiuserapp;
 
 import android.os.AsyncTask;
-import android.os.storage.StorageManager;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -15,6 +14,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Random;
+
+import static com.example.snakka.arayashikiuserapp.VoiceGuideActivity.voiceRev;
 
 /**
  * Created by morikei on 2017/07/03.
@@ -30,18 +32,18 @@ public class HttpCommunication {
     private static final String FILEPATHGET = "/mana/";
     private static final String FILEPATHPOST = "/mana/route";
     private static final int NUMNULL = 0;
+    private static final int HTTP_OK = 200;
+    private static final int HTTP_ERR = 400;
+
 
     private static String block = "false";
     private static String currentNum = "null";
-    private String fourWayNumberN = "null";
-    private String fourWayNumberS = "null";
-    private String fourWayNumberW = "null";
-    private String fourWayNumberE = "null";
+
 
     //TODO:同じNoでPOSTしないようにするためのフラグ
     private static boolean isIdenticalNumber = true;
 
-    //private String trafficLightAddress = "";
+    private String trafficLightAddress = "";
 
     /**
      * asyncTaskToGet()を始めると、自動的にasyncTaskToPost()を始める
@@ -54,12 +56,16 @@ public class HttpCommunication {
                 HttpURLConnection getCon = null;
                 int resCode = 0;
 
-                if( getSensorList(currentNum) == null ) return false;
+                if( checkSensorList(currentNum) == null ) return false;
                 currentNum = getSensorList();//センサー情報取得
                 try {
                     URL url = new URL(PROTOCOL, HOST, PORT, FILEPATHGET + currentNum);
                     getCon = (HttpURLConnection) url.openConnection();
+                    //TODO：初期値で設定されているから必要ない？
+                    //getCon.setRequestMethod("GET");
+                    //getCon.setDoInput(true);
                     getCon.connect();
+                    //TODO:ResponseCodeは今の所使ってないので
                     resCode = getCon.getResponseCode();
                     resultJson = jsonStreamToString(getCon.getInputStream());
                     Log.d("http通信", resultJson);
@@ -72,6 +78,7 @@ public class HttpCommunication {
                         getCon.disconnect();
                     }
                 }
+                //startFlg = false;
                 Log.d("http通信", "doInBackground終了");
 
                 return new Boolean(isResponseCode(resCode));
@@ -85,13 +92,10 @@ public class HttpCommunication {
             @Override
             protected void onPostExecute (Boolean isRes) {
                 if(isRes) {
-                    SensorNumber.setNum(numStringToInt(currentNum));
-                    SensorNumber.setNextNorth(numStringToInt(fourWayNumberN));
-                    SensorNumber.setNextEast(numStringToInt(fourWayNumberE));
-                    SensorNumber.setNextSouth(numStringToInt(fourWayNumberS));
-                    SensorNumber.setNextWest(numStringToInt(fourWayNumberW));
                     isIdenticalNumber = false;
                     Log.d("http通信","GET成功");
+                    //2秒ごとに音声を再生できるかどうか判定
+                    voiceRev.mainVoice();
                 }
                 Log.d("http通信", "Get終了");
                 try {
@@ -112,6 +116,7 @@ public class HttpCommunication {
 
 
                 if( isIdenticalNumber ) return -1;
+
                 resCode = AccountManager.httpDataPost(HOST, PORT, FILEPATHPOST,
                         getUserJson(currentNum, AccountManager.getUserName()));
                 return new Integer(resCode);
@@ -122,6 +127,7 @@ public class HttpCommunication {
                 isRes = (isResponseCode(resCode));
                 if(!isRes){//POSTができなかった場合
                     if( resCode == -1 ) {
+                        voiceRev.mainVoice();
                         Log.d("http通信", "同じNoなのでPOSTしない");
                     }
                     else {
@@ -129,7 +135,6 @@ public class HttpCommunication {
                     }
                 }else{//POST成功したとき
                     Log.d("http通信","POST成功");
-                    //POSTしたのでsensorList(0)を消去
                     sensorList.remove(0);
                     Log.d("http通信","sensorListのサイズ" + Integer.toString(sensorList.size()));
                 }
@@ -171,12 +176,15 @@ public class HttpCommunication {
     private void jsonanalysis(String json){
         try {
             JSONObject jsonObject = new JSONObject(json);
+
+            SensorNumber.setNum(numStringToInt(currentNum));
+            SensorNumber.setNextNorth(numStringToInt(jsonObject.getString("nothNo")));
+            SensorNumber.setNextEast(numStringToInt(jsonObject.getString("eastNo")));
+            SensorNumber.setNextSouth(numStringToInt(jsonObject.getString("southNo")));
+            SensorNumber.setNextWest(numStringToInt(jsonObject.getString("westNo")));
             block = jsonObject.getString("sensorType");
-            fourWayNumberN = jsonObject.getString("nothNo");
-            fourWayNumberS = jsonObject.getString("southNo");
-            fourWayNumberW = jsonObject.getString("westNo");
-            fourWayNumberE = jsonObject.getString("eastNo");
             //trafficLightAddress = jsonObject.getJSONObject("TrafficLight").getString("address");
+            //trafficLightSignal = jsonObject.getJSONObject("TrafficLight").getString("signal");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -192,23 +200,24 @@ public class HttpCommunication {
         }
     }
 
-    private int numStringToInt(String num){
+    private static int numStringToInt(String num){
         return num == "null" ? NUMNULL : Integer.parseInt(num);
     }
-    /**trueで進行ブロック、falseで停止ブロック*/
+
     public static boolean getBlock() {
         return Boolean.parseBoolean(block);
     }
 
-    /*public String getTrafficLightAddress() {
-        return trafficLightAddress;
-    }*/
+
 
     /**現在ナンバーと同じならnullを返す*/
-    private static String getSensorList(String currentNum) {
-        if(!sensorList.isEmpty())
-            Log.d("http通信","get(0)" + sensorList.get(0) + "currentNum" + currentNum);
-        if (sensorList == null || sensorList.isEmpty() || sensorList.get(0) == currentNum) return null;
+    private static String checkSensorList(String currentNum) {
+        //if(!sensorList.isEmpty())
+            //Log.d("http通信","get(0)" + sensorList.get(0) + "currentNum" + currentNum);
+        if (sensorList == null || sensorList.isEmpty() || sensorList.get(0).equals(currentNum)){
+            Log.d("httpCheck","同じNumber");
+            return null;
+        }
         return sensorList.get(0);
     }
 
@@ -218,15 +227,16 @@ public class HttpCommunication {
         return sensorList.get(0);
     }
 
-
     public static void setSensorList(String sensorStr) {
-        if(sensorList.isEmpty() && sensorStr != currentNum){
-            Log.d("http通信", "add成功２" + Integer.toString(sensorList.size()));
+        if(sensorList.isEmpty() && !sensorStr.equals(currentNum)){
+            Log.d("http通信", "add成功?" + Integer.toString(sensorList.size()) + "："
+                    + sensorStr + currentNum);
             sensorList.add(sensorStr);
             return;
         }
-        if(sensorList.isEmpty() || sensorList.get(sensorList.size()-1) == sensorStr) {
+        if(sensorList.isEmpty() || sensorList.get(sensorList.size()-1).equals(sensorStr)) {
             Log.d("http通信", "add失敗" + Integer.toString(sensorList.size()));
+                Log.d("httpLog","log");
             return; //連続して同じセンサーは受け付けない
         }
         Log.d("http通信", sensorList.get(sensorList.size()-1) + ":" + sensorStr);
@@ -234,5 +244,4 @@ public class HttpCommunication {
         Log.d("http通信", sensorList.get(sensorList.size()-1) + ":" + sensorStr);
         Log.d("http通信","add成功" + Integer.toString(sensorList.size()));
     }
-
 }

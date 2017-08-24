@@ -81,30 +81,15 @@
         android:layout_marginEnd="34dp"
         android:onClick="onCreateButtonClick"
         android:text="@string/create_text"
-        app:layout_constraintBottom_toBottomOf="@+id/toSigninView"
         tools:layout_constraintBottom_creator="1"
         tools:layout_constraintRight_creator="1"
-        android:layout_marginBottom="3dp"
         android:layout_marginRight="34dp"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginLeft="8dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginStart="8dp" />
-
-    <TextView
-        android:id="@+id/toSigninView"
-        android:layout_width="98dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="49dp"
-        android:layout_marginEnd="41dp"
-        android:onClick="onCreateButtonClick"
-        android:text="@string/login_text"
+        android:layout_marginStart="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_constraintBottom_creator="1"
-        tools:layout_constraintRight_creator="1"
-        android:layout_marginStart="40dp"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:layout_constraintLeft_creator="1"
-        app:layout_constraintLeft_toRightOf="@+id/createButton" />
+        android:layout_marginBottom="42dp"
+        app:layout_constraintHorizontal_bias="0.503" />
 
 </android.support.constraint.ConstraintLayout>
